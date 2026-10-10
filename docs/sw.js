@@ -1,4 +1,4 @@
-// Offline cache. dc430d4991 is replaced by build.js with a hash of the page, so every build ships a new cache.
+// Offline cache. e40a7b1dfa is replaced by build.js with a hash of the page, so every build ships a new cache.
 const CACHE='beamline-__VERSION__';
 const CORE=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
