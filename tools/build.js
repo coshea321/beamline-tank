@@ -4,13 +4,13 @@
 // It also solves every level and bakes the shortest move counts in as PAR. Fails if a level is unsolvable.
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const R=(...p)=>path.join(__dirname,'..',...p),read=f=>fs.readFileSync(R(f),'utf8');
-const {par,bad}=require('./solve.js')(null,true);
+const {par,best,bad}=require('./solve.js')(null,true);
 if(bad){console.error('A level is unsolvable or ragged. Run: npm run solve');process.exit(1);}
 // The version shown in the header comes from package.json: bump it in every PR that players will notice.
 const APPVERSION=JSON.parse(read('package.json')).version;
 const shell=read('src/shell.html').replace('__APPVERSION__',APPVERSION),cut=shell.indexOf('<main');
 const headPart=shell.slice(0,cut),bodyPart=shell.slice(cut);
-const script=read('src/engine.js')+read('src/levels.js')+'const PAR='+JSON.stringify(par)+';\n'+read('src/ui.js');
+const script=read('src/engine.js')+read('src/levels.js')+'const PAR='+JSON.stringify(par)+';const BEST='+JSON.stringify(best)+';\n'+read('src/ui.js');
 fs.mkdirSync(R('build'),{recursive:true});
 fs.writeFileSync(R('build/artifact.html'),shell+script+'</script>\n');
 const pwa=`<!doctype html>

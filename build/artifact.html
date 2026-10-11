@@ -63,7 +63,7 @@ dt{font-weight:600} dd{margin:0;color:var(--muted);min-width:0}
 kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
 </style>
 <main class="wrap">
-  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.6</span></p></header>
+  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.7</span></p></header>
   <details class="sectors" id="sectors">
     <summary>Sectors <span class="n" id="sprog"></span></summary>
     <div class="groups" id="groups" role="tablist" aria-label="Sector groups" hidden></div>
@@ -207,6 +207,8 @@ function fire(s,F){
   snap(s,F);
 }
 // actions: 0-3 = up/right/down/left, 4 = fire. Returns false if nothing happened.
+// What action a will be, judged before act(): 'shot', 'turn' (tank faces another way) or 'move' (tank tries to drive).
+function actKind(s,a){return a===4?'shot':s.td!==a?'turn':'move';}
 function act(s,a,F){
   if(s.dead||s.won)return false;
   if(a===4){fire(s,F);checkAT(s,F);settle(s,-1,F);return true;}
@@ -276,11 +278,11 @@ const LEVELS=[{"name":"First Shot","tip":"Bricks crumble under laser fire. Press
 {"name":"Holdout","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","#...bb^T...#","#..b#.5.##.#","#.~..~...~.#","#~.#.#3B#.v#","#FG....~..^#","#.~...~....#","#1..#b..~..#","############"]},
 {"name":"Endgame","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","##..2b.T..3#","#~..#.5.~..#","#.~..~b.b~.#","#.~..#bB#.~#","#FG.bb.~...#","#<..~2~....#","#..#.b..#..#","############"]}];
 const ORIG_NAMES=["First Shot","Pontoon","Round the Corner","Line of Sight","Return Fire","Turntable","Black Ice","One-Way Belt","Wormholes","Thin Ice"];
-const PAR=[22,39,13,18,18,16,23,25,19,10,10,8,23,17,19,45,23,32,38,59,37,45,45,49,47,56,54,61,80,82,92,100,101,101,101,102,103,104,104,106,109,111,112,112,116,119,119,125,125,125,127,130,132,132,139,153,154,154,154,168,174];
+const PAR=[22,39,13,18,18,16,23,25,19,10,10,8,23,17,19,45,23,32,38,59,37,45,45,49,47,56,54,61,80,82,92,100,101,101,101,102,103,104,104,106,109,111,112,112,116,119,119,125,125,125,127,130,132,132,139,153,154,154,154,168,174];const BEST=[[15,1],[22,8],[9,1],[11,3],[13,3],[10,1],[13,3],[15,2],[13,2],[5,0],[5,1],[2,2],[14,2],[9,2],[11,3],[34,2],[12,4],[16,8],[21,6],[30,15],[18,9],[23,9],[23,10],[24,9],[22,11],[32,7],[28,7],[30,14],[41,15],[43,12],[47,22],[47,24],[52,20],[51,17],[53,17],[52,19],[50,21],[56,20],[54,24],[53,24],[58,18],[54,27],[53,24],[52,30],[57,21],[59,19],[62,20],[64,18],[67,20],[65,27],[60,27],[64,24],[70,18],[69,21],[66,32],[82,20],[75,26],[75,29],[79,22],[90,21],[90,24]];
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let li=0,S,hist=[],moves=0,playing=false,gen=0,queue=[],bad=null,view=null,beam=null,cell=32,C={};
+let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],bad=null,view=null,beam=null,cell=32,C={};
 const solved=new Set();
 const NAMES=['bg','ink','floor','grid','wall','wallhi','brick','brickln','crate','crateln','water','waterhi','ice','icehi','belt','beltln','glass','mirror','mirrorback','tank','tankdk','enemy','enemydk','deadat','laser','flag','accent'];
 function colors(){const cs=getComputedStyle(document.documentElement);NAMES.forEach(n=>C[n]=cs.getPropertyValue('--'+n).trim());}
@@ -382,7 +384,7 @@ function showGroup(g){
 }
 function hud(){
   $('lname').textContent=String(li+1).padStart(2,'0')+' / '+LEVELS[li].name;
-  $('count').textContent='Moves '+moves+'  ·  Best possible '+PAR[li];
+  $('count').textContent='Moves '+moves+'  ·  Shots '+shots+'  ·  Best possible '+BEST[li][0]+' moves, '+BEST[li][1]+' shots';
   $('tip').textContent=LEVELS[li].tip;
   [...$('strip').children].forEach((b,k)=>{b.className=solved.has(LEVELS[k].name)?'done':'';b.setAttribute('aria-current',k===li);});
   [...$('groups').children].forEach((b,g)=>{const n=LEVELS.slice(g*GROUP,(g+1)*GROUP).filter(L=>solved.has(L.name)).length;b.lastChild.textContent=n?' '+n+'✓':'';});
@@ -395,15 +397,15 @@ function banner(kind,title,text,btns){
   btns.forEach(([label,fn,pri])=>{const e=document.createElement('button');e.className='btn'+(pri?' pri':'');e.textContent=label;e.onclick=fn;row.appendChild(e);});
   b.hidden=false;
 }
-function go(n){gen++;playing=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
-function undo(){if(playing||!hist.length)return;S=hist.pop();moves--;banner();hud();draw();}
+function go(n){gen++;playing=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;shots=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
+function undo(){if(playing||!hist.length)return;const h=hist.pop();S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
 function ended(){
   if(S.won){
     solved.add(LEVELS[li].name);save();hud();
     const N=LEVELS.length,all=LEVELS.every(L=>solved.has(L.name));
     let nx=(li+1)%N;if(!all)while(solved.has(LEVELS[nx].name))nx=(nx+1)%N;
     const lbl=nx===0?'Back to sector 1':nx===(li+1)%N?'Next sector':'Next: sector '+(nx+1);
-    banner('won','Flag captured',moves+' moves. The shortest route is '+PAR[li]+'.'+(all?' Every sector cleared.':''),
+    banner('won','Flag captured',moves+' moves, '+shots+' shots. The shortest route is '+BEST[li][0]+' moves, '+BEST[li][1]+' shots.'+(all?' Every sector cleared.':''),
       [[lbl,()=>go(nx),true],['Replay',()=>go(li)]]);
   }else if(S.dead){
     banner('lost','Tank destroyed',S.ter[S.ty*S.w+S.tx]==='~'?'It sank.':'Caught in a beam.',[['Undo',undo,true],['Restart',()=>go(li)]]);
@@ -422,9 +424,10 @@ function doAct(a,auto){
   if(!auto)queue=[];
   if(playing){if(!auto)queue=[a];return;}
   if(S.dead||S.won){queue=[];return;}
-  const before=clone(S),frames=[];
+  const before=clone(S),kind=actKind(S,a),frames=[];
   if(!act(S,a,frames)){queue=[];return;}
-  hist.push(before);if(hist.length>2000)hist.shift();moves++;hud();
+  hist.push({s:before,m:moves,f:shots});if(hist.length>2000)hist.shift();
+  if(kind==='move')moves++;else if(kind==='shot')shots++;hud();
   play(frames,()=>{if(S.won||S.dead){queue=[];ended();}else if(queue.length)doAct(queue.shift(),true);});
 }
 // Shortest safe sequence of drive/turn presses that leaves the tank on (gx,gy). Simulates ice, belts, tunnels and gun lines.
