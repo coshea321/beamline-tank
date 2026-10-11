@@ -8,7 +8,7 @@ here in the same PR; record any decision Cathal makes, including "no".
 
 - **Level editor:** palette, paint the grid, test play, and export the `rows` strings. The solver can run in the browser to validate (it is plain JS).
 - **Bigger levels:** full 16×16 maps, like the original.
-- **Hand-made hard tier:** replace the generated sectors 21–56 with hand-made puzzles.
+- **Hand-made hard tier:** replace the generated sectors 21–61 with hand-made puzzles.
 - **Feel:** sound effects (start audio from a tap), haptics (`navigator.vibrate`) on death and win.
 - **Move history:** show the move history, and add a replay of the shortest solution as a "show me" hint (the solver path is available at build time).
 - **Landscape layout:** put the board beside the controls in landscape on phones.
