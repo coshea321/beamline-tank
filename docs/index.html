@@ -80,7 +80,7 @@ kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
 </head>
 <body>
 <main class="wrap">
-  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.7</span></p></header>
+  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.8</span></p></header>
   <details class="sectors" id="sectors">
     <summary>Sectors <span class="n" id="sprog"></span></summary>
     <div class="groups" id="groups" role="tablist" aria-label="Sector groups" hidden></div>
@@ -295,7 +295,7 @@ const LEVELS=[{"name":"First Shot","tip":"Bricks crumble under laser fire. Press
 {"name":"Holdout","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","#...bb^T...#","#..b#.5.##.#","#.~..~...~.#","#~.#.#3B#.v#","#FG....~..^#","#.~...~....#","#1..#b..~..#","############"]},
 {"name":"Endgame","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","##..2b.T..3#","#~..#.5.~..#","#.~..~b.b~.#","#.~..#bB#.~#","#FG.bb.~...#","#<..~2~....#","#..#.b..#..#","############"]}];
 const ORIG_NAMES=["First Shot","Pontoon","Round the Corner","Line of Sight","Return Fire","Turntable","Black Ice","One-Way Belt","Wormholes","Thin Ice"];
-const PAR=[22,39,13,18,18,16,23,25,19,10,10,8,23,17,19,45,23,32,38,59,37,45,45,49,47,56,54,61,80,82,92,100,101,101,101,102,103,104,104,106,109,111,112,112,116,119,119,125,125,125,127,130,132,132,139,153,154,154,154,168,174];const BEST=[[15,1],[22,8],[9,1],[11,3],[13,3],[10,1],[13,3],[15,2],[13,2],[5,0],[5,1],[2,2],[14,2],[9,2],[11,3],[34,2],[12,4],[16,8],[21,6],[30,15],[18,9],[23,9],[23,10],[24,9],[22,11],[32,7],[28,7],[30,14],[41,15],[43,12],[47,22],[47,24],[52,20],[51,17],[53,17],[52,19],[50,21],[56,20],[54,24],[53,24],[58,18],[54,27],[53,24],[52,30],[57,21],[59,19],[62,20],[64,18],[67,20],[65,27],[60,27],[64,24],[70,18],[69,21],[66,32],[82,20],[75,26],[75,29],[79,22],[90,21],[90,24]];
+const PAR=[22,39,13,18,18,16,23,25,19,10,10,8,23,17,19,45,23,32,38,59,37,45,45,49,47,56,54,61,80,82,92,100,101,101,101,102,103,104,104,106,109,111,112,112,116,119,119,125,125,125,127,130,132,132,139,153,154,154,154,168,174];const BEST=[[15,1],[20,8],[9,1],[11,3],[13,3],[10,1],[13,3],[15,2],[13,2],[5,0],[5,1],[2,2],[14,2],[9,2],[11,3],[34,2],[12,4],[16,8],[21,6],[28,15],[18,9],[23,8],[23,10],[24,9],[22,11],[32,7],[28,7],[30,14],[41,15],[41,14],[47,22],[47,24],[52,20],[51,17],[53,17],[50,19],[50,21],[56,20],[54,24],[53,24],[58,18],[54,27],[53,24],[52,30],[57,20],[59,19],[58,26],[64,16],[67,20],[65,27],[60,27],[64,24],[70,18],[69,21],[66,31],[80,20],[75,26],[75,29],[79,22],[90,21],[90,24]];
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
