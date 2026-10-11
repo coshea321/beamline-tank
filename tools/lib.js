@@ -22,4 +22,28 @@ function solve(rows,cap=3e6){
   }
   return {none:true,states:seen.size};
 }
-module.exports={E,solve,key,LEVELS:E.LEVELS};
+// Cheapest route by what the player is scored on: squares driven first, then shots fired; turns are free.
+// Dijkstra with cost = moves*K + shots, so zero-cost turns are expanded within their own cost bucket.
+const K=1e4;
+function solveBest(rows,cap=3e6){
+  const s0=E.parseLevel(rows),t0=s0.ter,dist=new Map([[key(s0,t0),0]]),done=new Set(),buckets=new Map([[0,[s0]]]);
+  let c=0,maxc=0;
+  while(c<=maxc){
+    const b=buckets.get(c);
+    if(!b||!b.length){buckets.delete(c);c++;continue;}
+    const s=b.pop(),k=key(s,t0);
+    if(dist.get(k)!==c||done.has(k))continue;
+    if(s.won)return {moves:Math.floor(c/K),shots:c%K};
+    done.add(k);
+    if(done.size>cap)return {capped:true};
+    for(let a=0;a<5;a++){
+      const kind=E.actKind(s,a),n=E.clone(s);
+      if(!E.act(n,a,null)||n.dead)continue;
+      const nc=c+(kind==='move'?K:kind==='shot'?1:0),nk=key(n,t0);
+      if(dist.has(nk)&&dist.get(nk)<=nc)continue;
+      dist.set(nk,nc);if(!buckets.has(nc))buckets.set(nc,[]);buckets.get(nc).push(n);if(nc>maxc)maxc=nc;
+    }
+  }
+  return {none:true};
+}
+module.exports={E,solve,solveBest,key,LEVELS:E.LEVELS};

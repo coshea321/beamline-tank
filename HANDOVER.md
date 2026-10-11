@@ -3,7 +3,7 @@
 A LaserTank-style puzzle game (turn-based tank, lasers, mirrors, crates, anti-tanks). It runs as a single-file web page and as an installable PWA for phones. It uses no frameworks or dependencies, and every level is checked by a solver.
 
 - **Live game (GitHub Pages):** https://coshea321.github.io/ubiquitous-memory/ (served from `docs/` on `main`, so every merge goes live)
-- **Status:** version 1.7, 61 levels, ordered easy to hard. Sectors 29–61 are an extra-hard tier (par 80–174, sorted by par). Tap-to-drive, tap-to-shoot, undo, restart, progress saved on the device, light and dark themes.
+- **Status:** version 1.8, 61 levels, ordered easy to hard. Sectors 29–61 are an extra-hard tier (par 80–174, sorted by par). Tap-to-drive, tap-to-shoot, undo, restart, progress saved on the device, light and dark themes.
 - **Name:** "Beamline Tank" is deliberately not "LaserTank". The artwork and levels are original; only the rules are borrowed.
 
 ## Quick start
@@ -101,7 +101,7 @@ A mirror's open sides are the two faces its bright diagonal looks out of. A beam
 3. Add the level to `src/levels.js` at the right difficulty position, with a one-line `tip`.
 4. Run `npm run build`.
 
-Par is the minimum number of actions, turns included, so it is a rough difficulty signal. The player sees "Best possible" as the squares driven and shots fired along that shortest route (`BEST`, baked in by the build); turns are free and the player's Moves counter uses the same rule. The `states` count from `try.js` is a second one.
+Par is the minimum number of actions, turns included, so it is a rough difficulty signal. The player sees "Best possible" as the squares driven and shots fired along that cheapest route (`BEST`, baked in by the build; `solveBest` in `tools/lib.js` minimises squares driven, then shots, with turns free, so it can differ from the par route); turns are free and the player's Moves counter uses the same rule. The `states` count from `try.js` is a second one.
 
 To get more hard levels from the generator:
 
