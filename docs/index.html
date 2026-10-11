@@ -417,7 +417,7 @@ function undo(){if(playing||!hist.length)return;S=hist.pop();moves--;banner();hu
 function ended(){
   if(S.won){
     solved.add(LEVELS[li].name);save();hud();
-    const all=solved.size===LEVELS.length,N=LEVELS.length;
+    const N=LEVELS.length,all=LEVELS.every(L=>solved.has(L.name));
     let nx=(li+1)%N;if(!all)while(solved.has(LEVELS[nx].name))nx=(nx+1)%N;
     const lbl=nx===0?'Back to sector 1':nx===(li+1)%N?'Next sector':'Next: sector '+(nx+1);
     banner('won','Flag captured',moves+' moves. The shortest route is '+PAR[li]+'.'+(all?' Every sector cleared.':''),
