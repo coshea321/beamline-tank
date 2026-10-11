@@ -121,9 +121,11 @@ function undo(){if(playing||!hist.length)return;S=hist.pop();moves--;banner();hu
 function ended(){
   if(S.won){
     solved.add(LEVELS[li].name);save();hud();
-    const all=solved.size===LEVELS.length,last=li===LEVELS.length-1;
+    const N=LEVELS.length,all=LEVELS.every(L=>solved.has(L.name));
+    let nx=(li+1)%N;if(!all)while(solved.has(LEVELS[nx].name))nx=(nx+1)%N;
+    const lbl=nx===0?'Back to sector 1':nx===(li+1)%N?'Next sector':'Next: sector '+(nx+1);
     banner('won','Flag captured',moves+' moves. The shortest route is '+PAR[li]+'.'+(all?' Every sector cleared.':''),
-      [[last?'Back to sector 1':'Next sector',()=>go(li+1),true],['Replay',()=>go(li)]]);
+      [[lbl,()=>go(nx),true],['Replay',()=>go(li)]]);
   }else if(S.dead){
     banner('lost','Tank destroyed',S.ter[S.ty*S.w+S.tx]==='~'?'It sank.':'Caught in a beam.',[['Undo',undo,true],['Restart',()=>go(li)]]);
   }
