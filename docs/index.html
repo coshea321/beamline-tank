@@ -80,7 +80,7 @@ kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
 </head>
 <body>
 <main class="wrap">
-  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.5</span></p></header>
+  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.6</span></p></header>
   <details class="sectors" id="sectors">
     <summary>Sectors <span class="n" id="sprog"></span></summary>
     <div class="groups" id="groups" role="tablist" aria-label="Sector groups" hidden></div>
@@ -417,9 +417,11 @@ function undo(){if(playing||!hist.length)return;S=hist.pop();moves--;banner();hu
 function ended(){
   if(S.won){
     solved.add(LEVELS[li].name);save();hud();
-    const all=solved.size===LEVELS.length,last=li===LEVELS.length-1;
+    const all=solved.size===LEVELS.length,N=LEVELS.length;
+    let nx=(li+1)%N;if(!all)while(solved.has(LEVELS[nx].name))nx=(nx+1)%N;
+    const lbl=nx===0?'Back to sector 1':nx===(li+1)%N?'Next sector':'Next: sector '+(nx+1);
     banner('won','Flag captured',moves+' moves. The shortest route is '+PAR[li]+'.'+(all?' Every sector cleared.':''),
-      [[last?'Back to sector 1':'Next sector',()=>go(li+1),true],['Replay',()=>go(li)]]);
+      [[lbl,()=>go(nx),true],['Replay',()=>go(li)]]);
   }else if(S.dead){
     banner('lost','Tank destroyed',S.ter[S.ty*S.w+S.tx]==='~'?'It sank.':'Caught in a beam.',[['Undo',undo,true],['Restart',()=>go(li)]]);
   }
