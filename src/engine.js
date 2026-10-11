@@ -102,6 +102,8 @@ function fire(s,F){
   snap(s,F);
 }
 // actions: 0-3 = up/right/down/left, 4 = fire. Returns false if nothing happened.
+// What action a will be, judged before act(): 'shot', 'turn' (tank faces another way) or 'move' (tank tries to drive).
+function actKind(s,a){return a===4?'shot':s.td!==a?'turn':'move';}
 function act(s,a,F){
   if(s.dead||s.won)return false;
   if(a===4){fire(s,F);checkAT(s,F);settle(s,-1,F);return true;}

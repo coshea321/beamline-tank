@@ -1,7 +1,7 @@
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let li=0,S,hist=[],moves=0,playing=false,gen=0,queue=[],bad=null,view=null,beam=null,cell=32,C={};
+let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],bad=null,view=null,beam=null,cell=32,C={};
 const solved=new Set();
 const NAMES=['bg','ink','floor','grid','wall','wallhi','brick','brickln','crate','crateln','water','waterhi','ice','icehi','belt','beltln','glass','mirror','mirrorback','tank','tankdk','enemy','enemydk','deadat','laser','flag','accent'];
 function colors(){const cs=getComputedStyle(document.documentElement);NAMES.forEach(n=>C[n]=cs.getPropertyValue('--'+n).trim());}
@@ -103,7 +103,7 @@ function showGroup(g){
 }
 function hud(){
   $('lname').textContent=String(li+1).padStart(2,'0')+' / '+LEVELS[li].name;
-  $('count').textContent='Moves '+moves+'  ·  Best possible '+PAR[li];
+  $('count').textContent='Moves '+moves+'  ·  Shots '+shots+'  ·  Best possible '+BEST[li][0]+' moves, '+BEST[li][1]+' shots';
   $('tip').textContent=LEVELS[li].tip;
   [...$('strip').children].forEach((b,k)=>{b.className=solved.has(LEVELS[k].name)?'done':'';b.setAttribute('aria-current',k===li);});
   [...$('groups').children].forEach((b,g)=>{const n=LEVELS.slice(g*GROUP,(g+1)*GROUP).filter(L=>solved.has(L.name)).length;b.lastChild.textContent=n?' '+n+'✓':'';});
@@ -116,15 +116,15 @@ function banner(kind,title,text,btns){
   btns.forEach(([label,fn,pri])=>{const e=document.createElement('button');e.className='btn'+(pri?' pri':'');e.textContent=label;e.onclick=fn;row.appendChild(e);});
   b.hidden=false;
 }
-function go(n){gen++;playing=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
-function undo(){if(playing||!hist.length)return;S=hist.pop();moves--;banner();hud();draw();}
+function go(n){gen++;playing=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;shots=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
+function undo(){if(playing||!hist.length)return;const h=hist.pop();S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
 function ended(){
   if(S.won){
     solved.add(LEVELS[li].name);save();hud();
     const N=LEVELS.length,all=LEVELS.every(L=>solved.has(L.name));
     let nx=(li+1)%N;if(!all)while(solved.has(LEVELS[nx].name))nx=(nx+1)%N;
     const lbl=nx===0?'Back to sector 1':nx===(li+1)%N?'Next sector':'Next: sector '+(nx+1);
-    banner('won','Flag captured',moves+' moves. The shortest route is '+PAR[li]+'.'+(all?' Every sector cleared.':''),
+    banner('won','Flag captured',moves+' moves, '+shots+' shots. The shortest route is '+BEST[li][0]+' moves, '+BEST[li][1]+' shots.'+(all?' Every sector cleared.':''),
       [[lbl,()=>go(nx),true],['Replay',()=>go(li)]]);
   }else if(S.dead){
     banner('lost','Tank destroyed',S.ter[S.ty*S.w+S.tx]==='~'?'It sank.':'Caught in a beam.',[['Undo',undo,true],['Restart',()=>go(li)]]);
@@ -143,9 +143,10 @@ function doAct(a,auto){
   if(!auto)queue=[];
   if(playing){if(!auto)queue=[a];return;}
   if(S.dead||S.won){queue=[];return;}
-  const before=clone(S),frames=[];
+  const before=clone(S),kind=actKind(S,a),frames=[];
   if(!act(S,a,frames)){queue=[];return;}
-  hist.push(before);if(hist.length>2000)hist.shift();moves++;hud();
+  hist.push({s:before,m:moves,f:shots});if(hist.length>2000)hist.shift();
+  if(kind==='move')moves++;else if(kind==='shot')shots++;hud();
   play(frames,()=>{if(S.won||S.dead){queue=[];ended();}else if(queue.length)doAct(queue.shift(),true);});
 }
 // Shortest safe sequence of drive/turn presses that leaves the tank on (gx,gy). Simulates ice, belts, tunnels and gun lines.

@@ -19,15 +19,15 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
   const box=await p.locator('#cv').boundingBox();const c=box.width/12;
   await p.mouse.click(box.x+c*4.5,box.y+c*1.5);await p.waitForTimeout(800);
   const moves=await p.locator('#count').textContent();
-  // Tap-to-shoot: drive beside the brick (arriving face down), then tap the brick itself: turn + fire = 2 moves.
+  // Tap-to-shoot: drive beside the brick (arriving face down), then tap the brick itself: the turn is free and the shot adds 1 to Shots.
   await p.mouse.click(box.x+c*4.5,box.y+c*3.5);await p.waitForTimeout(800);
-  const n0=+(await p.locator('#count').textContent()).match(/Moves (\d+)/)[1];
+  const n0=(await p.locator('#count').textContent()).match(/Moves (\d+)\D+Shots (\d+)/).slice(1).map(Number);
   await p.mouse.click(box.x+c*5.5,box.y+c*3.5);await p.waitForTimeout(1200);
-  const n1=+(await p.locator('#count').textContent()).match(/Moves (\d+)/)[1];
+  const n1=(await p.locator('#count').textContent()).match(/Moves (\d+)\D+Shots (\d+)/).slice(1).map(Number);
   // Then the brick's square is open: tapping it again drives one step onto it.
   await p.mouse.click(box.x+c*5.5,box.y+c*3.5);await p.waitForTimeout(800);
-  const n2=+(await p.locator('#count').textContent()).match(/Moves (\d+)/)[1];
-  const shot=n1-n0===2&&n2-n1===1;
+  const n2=(await p.locator('#count').textContent()).match(/Moves (\d+)\D+Shots (\d+)/).slice(1).map(Number);
+  const shot=n1[0]-n0[0]===0&&n1[1]-n0[1]===1&&n2[0]-n1[0]===1&&n2[1]===n1[1];
   // Switching level mid-animation: no frame of the old level may be drawn after the switch.
   await p.click('#sectors summary');await p.click('#strip button:nth-child(1)');await p.waitForTimeout(200);
   const frames=await p.evaluate(()=>new Promise(r=>{const cv=document.getElementById('cv'),out=[];

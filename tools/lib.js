@@ -2,7 +2,7 @@
 const fs=require('fs'),path=require('path');
 const SRC=path.join(__dirname,'..','src');
 const code=fs.readFileSync(path.join(SRC,'engine.js'),'utf8')+'\n'+fs.readFileSync(path.join(SRC,'levels.js'),'utf8')+
-  ';module.exports={parseLevel,clone,act,checkAT,DX,DY,LEVELS};';
+  ';module.exports={parseLevel,clone,act,actKind,checkAT,DX,DY,LEVELS};';
 const m={exports:{}};new Function('module',code)(m);
 const E=m.exports;
 // State key: tank pose + every movable object + every terrain cell that changed (bridges, melted ice).
