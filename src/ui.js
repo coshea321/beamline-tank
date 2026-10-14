@@ -1,7 +1,7 @@
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],bad=null,view=null,beam=null,cell=32,C={};
+let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],grp=0,bad=null,view=null,beam=null,cell=32,C={};
 const solved=new Set();
 const NAMES=['bg','ink','floor','grid','wall','wallhi','brick','brickln','crate','crateln','water','waterhi','ice','icehi','belt','beltln','glass','mirror','mirrorback','tank','tankdk','enemy','enemydk','deadat','laser','flag','accent'];
 function colors(){const cs=getComputedStyle(document.documentElement);NAMES.forEach(n=>C[n]=cs.getPropertyValue('--'+n).trim());}
@@ -117,7 +117,8 @@ function banner(kind,title,text,btns){
   b.hidden=false;
 }
 function go(n){gen++;playing=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;shots=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
-function undo(){if(playing||!hist.length)return;const h=hist.pop();S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
+function undo(){if(playing||!hist.length)return;const g=hist[hist.length-1].g;let h;do h=hist.pop();while(hist.length&&hist[hist.length-1].g===g); // one tap-to-drive route undoes in one go
+  S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
 function ended(){
   if(S.won){
     solved.add(LEVELS[li].name);save();hud();
@@ -140,12 +141,12 @@ function play(frames,done){
   })();
 }
 function doAct(a,auto){
-  if(!auto)queue=[];
+  if(!auto){queue=[];grp++;}
   if(playing){if(!auto)queue=[a];return;}
   if(S.dead||S.won){queue=[];return;}
   const before=clone(S),kind=actKind(S,a),frames=[];
   if(!act(S,a,frames)){queue=[];return;}
-  hist.push({s:before,m:moves,f:shots});if(hist.length>2000)hist.shift();
+  hist.push({s:before,m:moves,f:shots,g:grp});if(hist.length>2000)hist.shift();
   if(kind==='move')moves++;else if(kind==='shot')shots++;hud();
   play(frames,()=>{if(S.won||S.dead){queue=[];ended();}else if(queue.length)doAct(queue.shift(),true);});
 }
@@ -189,6 +190,7 @@ function tapBoard(e){
   if(x===S.tx&&y===S.ty){doAct(4);return;}
   const p=route(x,y)||aim(x,y);
   if(!p){bad={x,y};draw();setTimeout(()=>{bad=null;draw();},450);return;}
+  grp++;
   if(playing){queue=p;return;}
   queue=p.slice(1);doAct(p[0],true);
 }
