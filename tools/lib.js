@@ -26,14 +26,14 @@ function solve(rows,cap=3e6){
 // Dijkstra with cost = moves*K + shots, so zero-cost turns are expanded within their own cost bucket.
 const K=1e6; // moves*K stays exact in a double; a route with K shots is refused below rather than mis-ranked
 function solveBest(rows,cap=3e6){
-  const s0=E.parseLevel(rows),t0=s0.ter,dist=new Map([[key(s0,t0),0]]),done=new Set(),buckets=new Map([[0,[s0]]]);
+  const s0=E.parseLevel(rows),t0=s0.ter,dist=new Map([[key(s0,t0),0]]),done=new Set(),buckets=new Map([[0,[s0]]]),paths=new Map([[key(s0,t0),'']]);
   let c=0,maxc=0;
   while(c<=maxc){
     const b=buckets.get(c);
     if(!b||!b.length){buckets.delete(c);c++;continue;}
     const s=b.pop(),k=key(s,t0);
     if(dist.get(k)!==c||done.has(k))continue;
-    if(s.won)return {moves:Math.floor(c/K),shots:c%K};
+    if(s.won)return {moves:Math.floor(c/K),shots:c%K,path:paths.get(k)};
     done.add(k);
     if(done.size>cap)return {capped:true};
     for(let a=0;a<5;a++){
@@ -42,7 +42,7 @@ function solveBest(rows,cap=3e6){
       const nc=c+(kind==='move'?K:kind==='shot'?1:0),nk=key(n,t0);
       if(nc%K===K-1)return {capped:true};
       if(dist.has(nk)&&dist.get(nk)<=nc)continue;
-      dist.set(nk,nc);if(!buckets.has(nc))buckets.set(nc,[]);buckets.get(nc).push(n);if(nc>maxc)maxc=nc;
+      dist.set(nk,nc);paths.set(nk,paths.get(k)+'URDLF'[a]);if(!buckets.has(nc))buckets.set(nc,[]);buckets.get(nc).push(n);if(nc>maxc)maxc=nc;
     }
   }
   return {none:true};
