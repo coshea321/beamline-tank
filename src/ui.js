@@ -66,9 +66,11 @@ function tile(s,x,y){
     ctx.fillStyle=C.crate;ctx.fillRect(c*.08,c*.08,c*.84,c*.84);ctx.strokeStyle=C.crateln;ctx.lineWidth=Math.max(1.5,c*.07);
     ctx.strokeRect(c*.12,c*.12,c*.76,c*.76);ctx.beginPath();ctx.moveTo(c*.12,c*.12);ctx.lineTo(c*.88,c*.88);ctx.moveTo(c*.88,c*.12);ctx.lineTo(c*.12,c*.88);ctx.stroke();
   }else if(o==='G'){
-    ctx.globalAlpha=.55;ctx.fillStyle=C.glass;ctx.fillRect(c*.04,c*.04,c*.92,c*.92);ctx.globalAlpha=1;
-    ctx.strokeStyle=C.glass;ctx.lineWidth=Math.max(1.5,c*.07);ctx.strokeRect(c*.07,c*.07,c*.86,c*.86);
-    ctx.strokeStyle=C.icehi;ctx.beginPath();ctx.moveTo(c*.22,c*.5);ctx.lineTo(c*.5,c*.22);ctx.moveTo(c*.34,c*.66);ctx.lineTo(c*.66,c*.34);ctx.stroke();
+    // A framed window (dark frame and cross bars) so it never reads as ice, which is a flat unframed floor.
+    ctx.globalAlpha=.6;ctx.fillStyle=C.glass;ctx.fillRect(c*.1,c*.1,c*.8,c*.8);ctx.globalAlpha=1;
+    ctx.strokeStyle=C.icehi;ctx.lineWidth=Math.max(1,c*.05);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(c*.2,c*.38);ctx.lineTo(c*.38,c*.2);ctx.moveTo(c*.62,c*.8);ctx.lineTo(c*.8,c*.62);ctx.stroke();
+    ctx.strokeStyle=C.wall;ctx.lineCap='butt';ctx.lineWidth=Math.max(1.5,c*.06);ctx.beginPath();ctx.moveTo(c*.5,c*.1);ctx.lineTo(c*.5,c*.9);ctx.moveTo(c*.1,c*.5);ctx.lineTo(c*.9,c*.5);ctx.stroke();
+    ctx.lineWidth=Math.max(2,c*.1);ctx.strokeRect(c*.1,c*.1,c*.8,c*.8);
   }else if(o&&o[0]==='M')tri(+o[1],false);
   else if(o&&o[0]==='R')tri(+o[1],true);
   else if(o&&o[0]==='A')vehicle(+o[1],C.enemy,C.enemydk);
