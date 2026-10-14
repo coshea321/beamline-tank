@@ -40,6 +40,9 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
   await p.locator('#strip button:visible').first().click();const picked=await p.locator('#lname').textContent();
   await p.click('#sectors summary');const reopened=await p.locator('#strip button:visible').first().textContent();await p.click('#sectors summary');
   const groups=firstShown==='21'&&picked.startsWith('21 /')&&reopened==='21';
-  console.log({errors:errs,sectorsCollapse:shut&&reshut,serviceWorker:sw,offlineTitle:offline,afterTap:moves,tapToShoot:shot,sectorGroups:groups,staleFramesAfterSwitch:stale});
-  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||stale?1:0);
+  // Show solution: plays the shortest route from the start and ends on the "Shortest route shown" banner without marking the sector solved.
+  await p.click('#show');
+  const shown=await p.waitForFunction(()=>/shortest route shown/i.test(document.body.innerText),null,{timeout:60000}).then(()=>true,()=>false);
+  console.log({errors:errs,showSolution:shown,sectorsCollapse:shut&&reshut,serviceWorker:sw,offlineTitle:offline,afterTap:moves,tapToShoot:shot,sectorGroups:groups,staleFramesAfterSwitch:stale});
+  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||!shown||stale?1:0);
 })();

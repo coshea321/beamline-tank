@@ -80,7 +80,7 @@ kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
 </head>
 <body>
 <main class="wrap">
-  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.8</span></p></header>
+  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.10</span></p></header>
   <details class="sectors" id="sectors">
     <summary>Sectors <span class="n" id="sprog"></span></summary>
     <div class="groups" id="groups" role="tablist" aria-label="Sector groups" hidden></div>
@@ -98,7 +98,7 @@ kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
     </div>
     <div class="side">
       <button class="btn" id="fire">Fire</button>
-      <div class="row"><button class="btn" id="undo">Undo</button><button class="btn" id="reset">Restart</button></div>
+      <div class="row"><button class="btn" id="undo">Undo</button><button class="btn" id="reset">Restart</button><button class="btn" id="show">Show solution</button></div>
     </div>
   </div>
   <details>
@@ -295,11 +295,11 @@ const LEVELS=[{"name":"First Shot","tip":"Bricks crumble under laser fire. Press
 {"name":"Holdout","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","#...bb^T...#","#..b#.5.##.#","#.~..~...~.#","#~.#.#3B#.v#","#FG....~..^#","#.~...~....#","#1..#b..~..#","############"]},
 {"name":"Endgame","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","##..2b.T..3#","#~..#.5.~..#","#.~..~b.b~.#","#.~..#bB#.~#","#FG.bb.~...#","#<..~2~....#","#..#.b..#..#","############"]}];
 const ORIG_NAMES=["First Shot","Pontoon","Round the Corner","Line of Sight","Return Fire","Turntable","Black Ice","One-Way Belt","Wormholes","Thin Ice"];
-const PAR=[22,39,13,18,18,16,23,25,19,10,10,8,23,17,19,45,23,32,38,59,37,45,45,49,47,56,54,61,80,82,92,100,101,101,101,102,103,104,104,106,109,111,112,112,116,119,119,125,125,125,127,130,132,132,139,153,154,154,154,168,174];const BEST=[[15,1],[20,8],[9,1],[11,3],[13,3],[10,1],[13,3],[15,2],[13,2],[5,0],[5,1],[2,2],[14,2],[9,2],[11,3],[34,2],[12,4],[16,8],[21,6],[28,15],[18,9],[23,8],[23,10],[24,9],[22,11],[32,7],[28,7],[30,14],[41,15],[41,14],[47,22],[47,24],[52,20],[51,17],[53,17],[50,19],[50,21],[56,20],[54,24],[53,24],[58,18],[54,27],[53,24],[52,30],[57,20],[59,19],[58,26],[64,16],[67,20],[65,27],[60,27],[64,24],[70,18],[69,21],[66,31],[80,20],[75,26],[75,29],[79,22],[90,21],[90,24]];
+const PAR=[22,39,13,18,18,16,23,25,19,10,10,8,23,17,19,45,23,32,38,59,37,45,45,49,47,56,54,61,80,82,92,100,101,101,101,102,103,104,104,106,109,111,112,112,116,119,119,125,125,125,127,130,132,132,139,153,154,154,154,168,174];const BEST=[[15,1,"RRRRDDDLLDDDRRRRRRUFUU"],[20,8,"DDRFFUURRRRRDFFRRRDDLFUULLLDFFFDDDDDRRRR"],[9,1,"RFDDDDRRRRRRR"],[11,3,"DDRFFFDDRRRRRRRRRR"],[13,3,"RFFRRRRRRRRRDFDDDD"],[10,1,"RRRDFRRRRDDDDDLL"],[13,3,"RRRUFFFRRUUURRRUURRRRRUU"],[15,2,"DDRFDDRRRRRUURFDDRRRRRRRR"],[13,2,"RFFDDDDRRRRRRRRUUURR"],[5,0,"DDRRUURRDD"],[5,1,"RFDDDUUURR"],[2,2,"RFDDRFDD"],[14,2,"RRDFDDDLLRRRRRUFUDDUUUU"],[9,2,"RRRRDFDDLLDDRFRDD"],[11,3,"DDDDRFFFDDRRRRRRDDD"],[34,2,"DDDDDDDDDDRRRRRRRRRUFLLLLUUURFUUUUUURRRRDDDDD"],[12,4,"RRDFRRRRRDFFLLDDDDRFRRR"],[16,8,"DDLFFFLLLUFFFFFRRUURRRRRRRRUUURR"],[21,6,"RRRDFLLLDDDDDDFLLRRRRUFFLLLDFFDUUDDDDD"],[28,15,"DDRFFUURRRRRDFFLLLDDRFUURRRDFFFRRRRRDDLFFFUULLLLLDFFFFDDDDDD"],[18,9,"RRRUUUULFFFFDDDLLUFRRUUULFFFFLLLLLLDD"],[23,8,"LLDDLLLLLUUUURFDDRFRDDLFLUURFDDLLRFFFRRRRRDFDD"],[23,10,"DDRFDDLLDDDDRRUFFFLLUFUUUURFFFFFRRRRRRRRDDDLL"],[24,9,"DDDRFUURRRUFUULLDFRRDDDLFUULLLDFFFFDDLLDDDDRFRRRR"],[22,11,"RFDDRRRRUFFUURRUULFUULFLLDFFRRDDDDLFFFFLLLLLLDD"],[32,7,"LLLLLDDDDLLLLLUUURFDDDRRRRUFFRRUUUULFDDLLLUFFRRUUUULFLLL"],[28,7,"LLDDLLLDDDLLLUUURFFRRDDRFRRUUULLDFRRDDDLFUULLLDFFDDDRR"],[30,14,"LLUFUUURFDDDLLLDDDDDRRUFLLUUURFDDRRRUFFFFRRUFFFUUUUULFFFLLLLL"],[41,15,"UURRRRDDDLFFLRFFDFFDDLLLDDDRRUFLLUUURFDDRFFUURRRRUUUUULLLDFFRRRDDDRFFRRRRRDFDDLL"],[41,14,"LLUFUUURFFFRRRRRDDRFRRUFULFLUFURFDDDLLDDLLLUUURFRRDDRRRUUULLDFRRDDDLFUULLLDFFDDDRR"],[47,22,"FFFUUURFFDDDDRRUFFLLLLLDFRRRRUUUURFDDDDDDLFFLDDLLLUFFLLUUUURFFFDDDRRRRRUFFFRRUUUUUULFFFLLLLL"],[47,24,"FULLLDDLLLUFULLLLDFLLDFDDDLLDFDDRRUFFFFLLUFFUUUUURFFFFRUURRRRRDFFFDDDLFLDFFDDRRUFLLUUURFFRRRDDRRUURR"],[52,20,"DDRRRRUUUURRRUFUUURFFDFDDDDDLFUURRUFFULLLLDDLLDDDRRUFFUULLLUFURFFDDRRDDRRRRUFFFFUUUUURFRUFULFFLLLLLDD"],[51,17,"LLLLDFDDRFFRRDDDRRRRUFFLLLUURFDDRRRUFFLLLUFUULLLLUUURRDFLLDDDRFFUUURRRRDFLLLDDDRRDDRFFDDRRRRUFFUUUURR"],[53,17,"LFLUFULLDFFDDDRRRDDDDLLDDUFRFRUUUULFUULFLLLLDDLLDDDRFUUURRUURRRRRDDDDDLLUFFFRRUUUUULFFFLLLDFDLLUFUUUU"],[50,19,"ULFFFUULLLLDDDLFDFFDDRRRDDLFUULLLDDLFFFFFLLLLLUUURFDDDRRRRUFUULLUUUURFDDRRRRDDLFDDLLLLUFFRRUFLLUUUULLL"],[50,21,"LLLLUFFFUUUURFFRRRRDFFDDRFUUURFFRRDDRFRRUFULFLUFURFDDDLLDFDLLLUUURFRRDDRRRUUULLDFRRDDDLFUULLLDFFDDDRRDD"],[56,20,"LLLUFFFFRRUFUUULFFFFFLLLLLDFRRRDDLFLDDDRRDDLFLUUUUURRDFRRRRDDDLFFFLLLLDDDRRUFLLUUUUURRRRRDDDLFFLLLLLLLDD"],[54,24,"RFRRDDRRRRRDFDRFRRUUULLDFDLLLLLLUULLLDFDRFFFFFFFFRRRRRRRRDFDDDLLUFRRUUUULFFFFFFLLLLLLUULLDFLLDFDDRFRRDDD"],[53,24,"LFLUFUUULFFFLLLDDLFFLLLUULLDFRRDDRRDDDDLLLUFFUURRUURRRRDFFDDLFUUULLLRFFFDDLLLDDDRRRUFFUULLUURFFFFFFRRRRRRRR"],[58,18,"RRUUUUURRRRDDDRFRUFFLLUUUUURRRDDLFUULLLDFRRDDDLFFFFFLLLLDDDDDLLDDLLUFRRUURRUUUUUULFFFUULFLLLLLDFFDDDDRFRDDDLL"],[54,27,"FFFUUURFFDDDDRRUFFLLUUUURFRDFFDDDDDLFFFLLLLUFULLLDDDRRUFLLUUURFDDRRRUFLLUFUURFFFDDDRRRRRUFFFRRUUUUUULFFFLLLLLDD"],[53,24,"LLUUULLUUURRRDDRFFFFRRRRDDRFFRRUFULFLUFURFDDLFFFFLLLLUULLLLDDRFUURRRDDRFFFFRRRRDFDRRRUUULLDFRRDDDLFUULLLDFFDDDRR"],[52,30,"DDRFRRUURFFRRRDDRRRDDRFRRDFFDDLLLLDDLFFLLUFFFRRUUDFFRFFRRUUULFLDFRRDDDLFLRFDDLLLUFFFRRRDDLFFUUUURRRDFFDDDLFFFFLLLLLL"],[57,20,"DFFLLDDDDLFUUULFLLDFRRRDDDDLFLLUFFULLUFRRRRUUULFFLLUULLLUULLLDDDRRDFDRFFRRDDRRUFLLUUURFFDDDRRRRUFLLLUUUURFDDRFRRUUULL"],[59,19,"URRUFURRRRRDFDDLFLLDDDDLFFUULFLLLDDDRRUFLLUUURFFRRUURRDFLLDFRRDDDDRRRUULFDDLLLUFFUULLUURFRDDDRRUFLLUUUURFFRRRRDFLLDDDRR"],[58,26,"LFLUFFRRUFLLUFUUULFLUFRRRUFUUULFDFDDLLDDDUFRFRRRDFDDRRUFFFLLUUULLLUUUUUURFFDDRFDDDDDRRRDDRRUFLLUFFULLLUUUURFUURFUURFDDDRRRDFDRRR"],[64,16,"LLUUULLLDDLFFLLDDLFDDDDLLLUFULLLUURFFDDRRDDRRRRUUUUURRDFLFLDDDDDRRRUULFDDLLLUFFUULLUUUURFDDRRRRDDLFUULLLDDDLLUFFRRUFLLUUUULLL"],[67,20,"LLDDDLFLLLDDRFFFFDFDDRRRRRRUURRUUURRUUULFDDDLFFLLLLRFUUUURRDFFLLDDDDRFFFRRRUURRRDDLFUULLLDFFDLLLDDLLLLLDDDRRRRRRUURFRRDFDRRRUU"],[65,27,"LLUUUUUURFRDDRRRUURFFRRDDRRRUULFFFDDDDDRRRUFFUUUULFFFFLLDDDDLLLLDFFDRFFFRRRUUUUURRRDDLFUULLLDFFFRRRDFDDDDLFFFLLUULLLLDFFDDDLL"],[60,27,"RFRRUURFRRUFFFUUURFFDDDDRRUFFDFFFLLUUUURFDDDDLFLLDDLLLLDDDRRUFLLUUURFFDDRRRRUFLLUUURFFDDDRRRRUFFFLLLUUURRRRUUUULFFLLUULFDDLFLLL"],[64,24,"LLUFFLLLLLDDDRFUUURRRUURFRDFDRRUFFFUUULFLRFUURFFRRDFLFLDDDDDRRDDDLFUUULLLLLLDDDRRDDRFFFUULLUUURRRUURFDDRRRUFFFUUURRUULFFLLLLLDDDLL"],[70,18,"DDDLLDFDDUFLLLDDDRFRRRUFLLLLUULLUUUUUURFFFFFFRRRRRRDDRRDDLFUULLUULLLDDLFFUULLLLLDDDRRDDDDDRRRRUURRUULFFFDDLLDDLLLLUULLUFRRUUULFLLLDD"],[69,21,"LLLUFRRRUULFLDFDDDDLFFLLUULLUUUUURFRRUFURRDFFFFFDLLLLDDDDRRDDDRFRRUUUULLUFRRDDDDLLLUULLUUUUURFRRUURRDFFLLDDDDRFUURRRDFLLDDDRFFRRRUUU"],[66,31,"DDRRDDDLFFLDFDLFDDRRDDLFFLLUFFRRUUUULFLLLDFDLLDFDLLDFRRUURRUURRRDDDDLFFFFUUUULLLDFRRRDDDDLFFFUUUUUULFLLDFFFFRRRDDDDDDLFFFFLLLLLLUULLUFFUULL"],[80,20,"RRDDDLLLDDLFFFUURRRUUULLUUULFLLLDFFFRRRDDRRRDDDDLLLDDLFFFUURRRUUULLUUULLLLDDDDLLLUULFLUUURFDDRRDDDDDLFFLLUULLUURFDDRRDDRRRUFRRRUUUULFDDLLLLUFFRRUFLLUUUULLL"],[75,26,"LFFFLLLDDDLFUUURRRDFDLFFLLUUULFLUULLLDDRFDDRFFFUUURRRDFLLLDDDRFFUURRRRDDDRRRUFLLLDDLFUUURFDDRRRUFLLLLLLUURFFFUURFDDDRRRRRRUFLLLUUURFDDRRRUURFRRRRDDDLLDDLL"],[75,29,"URRUUURRUURFDFDRRRDDDLFFUUULLUUURRDFFDDLLLLDDUFLLLLUUURFFFFRRRDFDRRRRUUULLDFRRDDDLFFUULLLLDFFDDLLDDDRFUURFRUUURRDFLLDDDRRRDFFDDLFLUFRRUUULFFLLUULLDFFDDDRFRDD"],[79,22,"RRUFLLUUURFDDLLDDDLLDFLFLUUULLLDFLFLLDFRRRRRDDLFFDDDLLLLUFRRRRUUUULLLLLDFRRRDFRRRDDDDLLLLUURFFFFDDRRRRRRUFFLLLUUUURRDFLLDDDRRRUURRRUUULLDFDLLDDRFUURRRDFDDRR"],[90,21,"DDDLLDFFDDLLDFDDRRRUFLLLUUURRUUURFRUUURRRRDDDLFFUUULLLLDDDDLLDDLLLUUULLUFUURFFRRDDRFFFFUULLLRFFDDDRRDDDRRDDDRRRUURRUULFFDDLLDDLLLUUURRUURRUUUULLLLLDDDRRDFDDRRDDLFFLLLLUU"],[90,24,"DDDLFLRFDFDDLFFLLLDDRFUURRRDFDDRRRUFLLLUUURRUUURFRUUURRRDDRRDDLFFUULLUULFLLDDDDLLDDLLLLUUUUURFFRRDDRFFFFUULLLDDDDDRRRDDDRRRUURRUULFFDDLLDDLLLLUFFRRUUURRUUULFDDDLLLUUULFLLLDDD"]];
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],bad=null,view=null,beam=null,cell=32,C={};
+let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],grp=0,demo=false,bad=null,view=null,beam=null,cell=32,C={};
 const solved=new Set();
 const NAMES=['bg','ink','floor','grid','wall','wallhi','brick','brickln','crate','crateln','water','waterhi','ice','icehi','belt','beltln','glass','mirror','mirrorback','tank','tankdk','enemy','enemydk','deadat','laser','flag','accent'];
 function colors(){const cs=getComputedStyle(document.documentElement);NAMES.forEach(n=>C[n]=cs.getPropertyValue('--'+n).trim());}
@@ -414,10 +414,16 @@ function banner(kind,title,text,btns){
   btns.forEach(([label,fn,pri])=>{const e=document.createElement('button');e.className='btn'+(pri?' pri':'');e.textContent=label;e.onclick=fn;row.appendChild(e);});
   b.hidden=false;
 }
-function go(n){gen++;playing=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;shots=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
-function undo(){if(playing||!hist.length)return;const h=hist.pop();S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
+function go(n){gen++;playing=false;demo=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;shots=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
+function undo(){if(playing||!hist.length)return;const g=hist[hist.length-1].g;let h;do h=hist.pop();while(hist.length&&hist[hist.length-1].g===g); // one tap-to-drive route undoes in one go
+  S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
+function showSolution(){ // replays the shortest route from the start; never marks the sector solved
+  go(li);demo=true;const p=[...BEST[li][2]].map(c=>'URDLF'.indexOf(c));queue=p.slice(1);doAct(p[0],true);
+}
 function ended(){
-  if(S.won){
+  if(S.won&&demo){
+    banner('won','Shortest route shown',BEST[li][0]+' moves, '+BEST[li][1]+' shots. Now try it yourself.',[['Try it',()=>go(li),true],['Next sector',()=>go(li+1)]]);
+  }else if(S.won){
     solved.add(LEVELS[li].name);save();hud();
     const N=LEVELS.length,all=LEVELS.every(L=>solved.has(L.name));
     let nx=(li+1)%N;if(!all)while(solved.has(LEVELS[nx].name))nx=(nx+1)%N;
@@ -438,12 +444,12 @@ function play(frames,done){
   })();
 }
 function doAct(a,auto){
-  if(!auto)queue=[];
+  if(!auto){queue=[];grp++;demo=false;} // taking over from a demo makes the run count again
   if(playing){if(!auto)queue=[a];return;}
   if(S.dead||S.won){queue=[];return;}
   const before=clone(S),kind=actKind(S,a),frames=[];
   if(!act(S,a,frames)){queue=[];return;}
-  hist.push({s:before,m:moves,f:shots});if(hist.length>2000)hist.shift();
+  hist.push({s:before,m:moves,f:shots,g:grp});if(hist.length>2000)hist.shift();
   if(kind==='move')moves++;else if(kind==='shot')shots++;hud();
   play(frames,()=>{if(S.won||S.dead){queue=[];ended();}else if(queue.length)doAct(queue.shift(),true);});
 }
@@ -487,6 +493,7 @@ function tapBoard(e){
   if(x===S.tx&&y===S.ty){doAct(4);return;}
   const p=route(x,y)||aim(x,y);
   if(!p){bad={x,y};draw();setTimeout(()=>{bad=null;draw();},450);return;}
+  grp++;demo=false;
   if(playing){queue=p;return;}
   queue=p.slice(1);doAct(p[0],true);
 }
@@ -507,7 +514,7 @@ function start(data){
   $('sectors').addEventListener('toggle',()=>{if($('sectors').open)showGroup(Math.floor(li/GROUP));});
   for(let d=0;d<4;d++)hold($('k'+d),d);hold($('fire'),4);
   cv.addEventListener('pointerdown',e=>{e.preventDefault();tapBoard(e);});
-  $('undo').onclick=undo;$('reset').onclick=()=>{if(!playing)go(li);};
+  $('undo').onclick=undo;$('show').onclick=showSolution;$('reset').onclick=()=>{if(!playing)go(li);};
   const KEYS={ArrowUp:0,ArrowRight:1,ArrowDown:2,ArrowLeft:3,w:0,d:1,s:2,a:3,' ':4};
   addEventListener('keydown',e=>{
     if(e.ctrlKey||e.metaKey||e.altKey)return;

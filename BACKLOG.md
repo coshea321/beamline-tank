@@ -10,7 +10,8 @@ here in the same PR; record any decision Cathal makes, including "no".
 - **Bigger levels:** full 16×16 maps, like the original.
 - **Hand-made hard tier:** replace the generated sectors 21–61 with hand-made puzzles.
 - **Feel:** sound effects (start audio from a tap), haptics (`navigator.vibrate`) on death and win.
-- **Move history:** show the move history, and add a replay of the shortest solution as a "show me" hint (the solver path is available at build time).
+- **Move history:** show the move history. (The "show me" replay of the shortest solution is built: v1.10.)
+- **Replay link of your own run:** shareable link that plays back a player's winning run. Offered, not chosen (Cathal picked the shortest-solution replay instead, 14 Oct 2026).
 - **Landscape layout:** put the board beside the controls in landscape on phones.
 
 ## Decisions on record
