@@ -1,6 +1,6 @@
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,wide=matchMedia('(orientation: landscape) and (max-height: 540px)');
 let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],grp=0,demo=false,bad=null,view=null,beam=null,cell=32,C={};
 const solved=new Set();
 const NAMES=['bg','ink','floor','grid','wall','wallhi','brick','brickln','crate','crateln','water','waterhi','ice','icehi','belt','beltln','glass','mirror','mirrorback','tank','tankdk','enemy','enemydk','deadat','laser','flag','accent'];
@@ -10,7 +10,8 @@ function load(){try{const o=JSON.parse(localStorage.getItem('blt')||'null');if(o
   try{const d=JSON.parse(localStorage.getItem('blt2')||'{}');(d.s||[]).forEach(n=>solved.add(n));const k=LEVELS.findIndex(L=>L.name===d.n);if(k>=0)li=k;else if(d.li>=0&&d.li<LEVELS.length)li=d.li;}catch(e){}}
 
 function size(){
-  const W=$('board').clientWidth-16,H=Math.max(220,innerHeight-360);
+  // Sideways phone: the board fills its grid cell, so its own height (less padding and border) is the limit.
+  const b=$('board'),W=b.clientWidth-16,H=wide.matches?b.clientHeight-16:Math.max(220,innerHeight-360);
   cell=Math.max(14,Math.min(Math.floor(W/S.w),Math.floor(H/S.h),52));
   const dpr=window.devicePixelRatio||1;
   cv.style.width=cell*S.w+'px';cv.style.height=cell*S.h+'px';
@@ -65,9 +66,11 @@ function tile(s,x,y){
     ctx.fillStyle=C.crate;ctx.fillRect(c*.08,c*.08,c*.84,c*.84);ctx.strokeStyle=C.crateln;ctx.lineWidth=Math.max(1.5,c*.07);
     ctx.strokeRect(c*.12,c*.12,c*.76,c*.76);ctx.beginPath();ctx.moveTo(c*.12,c*.12);ctx.lineTo(c*.88,c*.88);ctx.moveTo(c*.88,c*.12);ctx.lineTo(c*.12,c*.88);ctx.stroke();
   }else if(o==='G'){
-    ctx.globalAlpha=.55;ctx.fillStyle=C.glass;ctx.fillRect(c*.04,c*.04,c*.92,c*.92);ctx.globalAlpha=1;
-    ctx.strokeStyle=C.glass;ctx.lineWidth=Math.max(1.5,c*.07);ctx.strokeRect(c*.07,c*.07,c*.86,c*.86);
-    ctx.strokeStyle=C.icehi;ctx.beginPath();ctx.moveTo(c*.22,c*.5);ctx.lineTo(c*.5,c*.22);ctx.moveTo(c*.34,c*.66);ctx.lineTo(c*.66,c*.34);ctx.stroke();
+    // A framed window (dark frame and cross bars) so it never reads as ice, which is a flat unframed floor.
+    ctx.globalAlpha=.6;ctx.fillStyle=C.glass;ctx.fillRect(c*.1,c*.1,c*.8,c*.8);ctx.globalAlpha=1;
+    ctx.strokeStyle=C.icehi;ctx.lineWidth=Math.max(1,c*.05);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(c*.2,c*.38);ctx.lineTo(c*.38,c*.2);ctx.moveTo(c*.62,c*.8);ctx.lineTo(c*.8,c*.62);ctx.stroke();
+    ctx.strokeStyle=C.wall;ctx.lineCap='butt';ctx.lineWidth=Math.max(1.5,c*.06);ctx.beginPath();ctx.moveTo(c*.5,c*.1);ctx.lineTo(c*.5,c*.9);ctx.moveTo(c*.1,c*.5);ctx.lineTo(c*.9,c*.5);ctx.stroke();
+    ctx.lineWidth=Math.max(2,c*.1);ctx.strokeRect(c*.1,c*.1,c*.8,c*.8);
   }else if(o&&o[0]==='M')tri(+o[1],false);
   else if(o&&o[0]==='R')tri(+o[1],true);
   else if(o&&o[0]==='A')vehicle(+o[1],C.enemy,C.enemydk);

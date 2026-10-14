@@ -61,6 +61,22 @@ summary{cursor:pointer;font-weight:600;letter-spacing:.06em;text-transform:upper
 dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:10px 0 0}
 dt{font-weight:600} dd{margin:0;color:var(--muted);min-width:0}
 kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
+/* Phone turned sideways: only the board, the controls and a small level name, like a gamepad
+   (drive pad left, board centre, level name, Fire and buttons right). Safe-area insets move from :root onto .wrap so it is exactly one screen tall. */
+@media (orientation:landscape) and (max-height:540px){
+  :root{padding:0!important} body{margin:0}
+  .wrap{max-width:none;height:100vh;height:100dvh;box-sizing:border-box;gap:8px 12px;
+    display:grid;grid-template-columns:auto minmax(0,1fr) 150px;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"pad board meta" "pad board side";
+    padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+  header,.sectors,#tip,#count,.wrap>details{display:none}
+  .deck{display:contents}
+  .meta{grid-area:meta}
+  .meta h2{font-size:13px;line-height:1.3}
+  .pad{grid-area:pad;align-self:center}
+  .board{grid-area:board;align-items:center}
+  .side{grid-area:side;align-self:center;width:auto;min-width:0;max-width:none}
+  #fire{padding:22px 10px}
+}
 </style>
 <main class="wrap">
   <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v__APPVERSION__</span></p></header>
@@ -93,10 +109,10 @@ kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
       <dt>Crate</dt><dd>Each shot pushes it one square. In water it becomes a bridge.</dd>
       <dt>Mirror</dt><dd>Bends the beam off its bright diagonal. A hit on a dull side pushes it. It sinks in water.</dd>
       <dt>Round mirror</dt><dd>Fixed in place. A hit on a dull side turns it clockwise.</dd>
-      <dt>Glass</dt><dd>Blocks tanks, lets lasers through.</dd>
+      <dt>Glass</dt><dd>A framed window. Blocks tanks, lets lasers through.</dd>
       <dt>Anti-tank</dt><dd>Shoots you on sight along its barrel line. Killed only by a hit on the muzzle; other hits push it.</dd>
       <dt>Water</dt><dd>Sinks your tank.</dd>
-      <dt>Ice</dt><dd>Tanks and pushed objects slide until stopped. Cracked ice turns to water after you leave it.</dd>
+      <dt>Ice</dt><dd>Pale floor with streaks, no frame. Tanks and pushed objects slide until stopped. Cracked ice turns to water after you leave it.</dd>
       <dt>Belt</dt><dd>Carries the tank in the arrow direction.</dd>
       <dt>Tunnel</dt><dd>Teleports to the matching tunnel if its exit is clear.</dd>
     </dl>

@@ -12,7 +12,7 @@ here in the same PR; record any decision Cathal makes, including "no".
 - **Feel:** sound effects (start audio from a tap), haptics (`navigator.vibrate`) on death and win.
 - **Move history:** show the move history. (The "show me" replay of the shortest solution is built: v1.10.)
 - **Replay link of your own run:** shareable link that plays back a player's winning run. Offered, not chosen (Cathal picked the shortest-solution replay instead, 14 Oct 2026).
-- **Landscape layout:** put the board beside the controls in landscape on phones.
+- ~~**Landscape layout:** put the board beside the controls in landscape on phones.~~ Built in v1.11: sideways shows only the board and controls.
 
 ## Decisions on record
 

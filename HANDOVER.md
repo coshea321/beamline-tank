@@ -92,6 +92,8 @@ A mirror's open sides are the two faces its bright diagonal looks out of. A beam
 - **Tap-to-shoot:** if the tapped square can't be reached but holds an object, `aim()` tries a shot in each direction (the current facing first, then clockwise) on cloned states. It picks the first shot whose beam reaches that square, changes something, and doesn't destroy the tank. Mirror bounces count. That becomes turn + fire, or just fire. If neither driving nor shooting works, it shows a red cross.
 - **Input queue:** tapped routes go into `queue`. Pressing a key or button replaces the queue, which interrupts an auto-drive.
 - **Saved progress:** stored in `localStorage` key `blt2` as solved level *names*, plus the current level by name (`n`, with its index `li` as a fallback), so levels can be reordered freely.
+- **Sideways phone:** a media query in `shell.html` (`landscape` and height ≤ 540px) hides the header, sector strip, move count, tip and field manual, and lays out a grid: drive pad | board | small level name above Fire and buttons. The safe-area padding moves from `:root` onto `.wrap` so the page is exactly one screen tall. `size()` in `ui.js` uses the same query to give the board the full screen height. The manifest's `orientation` is `any` so the installed app can rotate.
+- **Glass vs ice:** glass is drawn as a framed window (dark frame and cross bars) and ice as flat, unframed floor with streaks, so the two can't be confused on a level that has only one of them.
 - **Artifact leftovers:** `window.claude.hot` calls are for the artifact host and are no-ops in the PWA.
 
 ## Adding or changing levels
