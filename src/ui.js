@@ -10,8 +10,8 @@ function load(){try{const o=JSON.parse(localStorage.getItem('blt')||'null');if(o
   try{const d=JSON.parse(localStorage.getItem('blt2')||'{}');(d.s||[]).forEach(n=>solved.add(n));const k=LEVELS.findIndex(L=>L.name===d.n);if(k>=0)li=k;else if(d.li>=0&&d.li<LEVELS.length)li=d.li;}catch(e){}}
 
 function size(){
-  // Sideways phone: the board has the full height (less the page and board padding) and its share of the width.
-  const W=$('board').clientWidth-16,H=wide.matches?innerHeight-32:Math.max(220,innerHeight-360);
+  // Sideways phone: the board fills its grid cell, so its own height (less padding and border) is the limit.
+  const b=$('board'),W=b.clientWidth-16,H=wide.matches?b.clientHeight-16:Math.max(220,innerHeight-360);
   cell=Math.max(14,Math.min(Math.floor(W/S.w),Math.floor(H/S.h),52));
   const dpr=window.devicePixelRatio||1;
   cv.style.width=cell*S.w+'px';cv.style.height=cell*S.h+'px';
