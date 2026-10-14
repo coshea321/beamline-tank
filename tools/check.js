@@ -40,9 +40,11 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
   await p.locator('#strip button:visible').first().click();const picked=await p.locator('#lname').textContent();
   await p.click('#sectors summary');const reopened=await p.locator('#strip button:visible').first().textContent();await p.click('#sectors summary');
   const groups=firstShown==='21'&&picked.startsWith('21 /')&&reopened==='21';
-  // Show solution: plays the shortest route from the start and ends on the "Shortest route shown" banner without marking the sector solved.
+  // Show solution: asks first (Show it / Cancel), then plays the shortest route from the start and ends on the "Shortest route shown" banner without marking the sector solved.
   await p.click('#show');
-  const shown=await p.waitForFunction(()=>/shortest route shown/i.test(document.body.innerText),null,{timeout:60000}).then(()=>true,()=>false);
+  const asked=await p.locator('#bbtns button',{hasText:'Show it'}).isVisible();
+  await p.click('#bbtns button:has-text("Show it")');
+  const shown=asked&&await p.waitForFunction(()=>/shortest route shown/i.test(document.body.innerText),null,{timeout:180000}).then(()=>true,()=>false);
   // Phone turned sideways: only the board, controls and level name show, all inside the screen without scrolling.
   await p.setViewportSize({width:844,height:390});await p.waitForTimeout(300);
   const land=await p.evaluate(()=>{const v=id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight;};

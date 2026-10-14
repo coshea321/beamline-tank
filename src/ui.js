@@ -122,7 +122,11 @@ function banner(kind,title,text,btns){
 function go(n){gen++;playing=false;demo=false;li=(n+LEVELS.length)%LEVELS.length;S=parseLevel(LEVELS[li].rows);hist=[];moves=0;shots=0;queue=[];view=null;beam=null;banner();save();showGroup(Math.floor(li/GROUP));hud();size();}
 function undo(){if(playing||!hist.length)return;const g=hist[hist.length-1].g;let h;do h=hist.pop();while(hist.length&&hist[hist.length-1].g===g); // one tap-to-drive route undoes in one go
   S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
-function showSolution(){ // replays the shortest route from the start; never marks the sector solved
+function showSolution(){ // asks first, since the button is easy to hit by accident; Cancel leaves the run untouched
+  banner('ask','Show the solution?','This restarts the sector and plays the shortest route. It won\'t count as solved.',
+    [['Show it',playSolution,true],['Cancel',()=>{banner();if(S.won||S.dead)ended();}]]);
+}
+function playSolution(){ // replays the shortest route from the start; never marks the sector solved
   go(li);demo=true;const p=[...BEST[li][2]].map(c=>'URDLF'.indexOf(c));queue=p.slice(1);doAct(p[0],true);
 }
 function ended(){
@@ -145,7 +149,7 @@ function play(frames,done){
   (function next(){
     if(g!==gen)return; // level changed mid-animation: drop the old frames
     if(k>=frames.length){playing=false;view=null;beam=null;draw();done();return;}
-    const f=frames[k++];view=f.s;beam=f.laser?f:null;draw();setTimeout(next,f.laser?130:50);
+    const f=frames[k++];view=f.s;beam=f.laser?f:null;draw();setTimeout(next,(f.laser?130:50)*(demo?2.5:1)); // the solution replay runs slower so it can be followed
   })();
 }
 function doAct(a,auto){
@@ -156,7 +160,9 @@ function doAct(a,auto){
   if(!act(S,a,frames)){queue=[];return;}
   hist.push({s:before,m:moves,f:shots,g:grp});if(hist.length>2000)hist.shift();
   if(kind==='move')moves++;else if(kind==='shot')shots++;hud();
-  play(frames,()=>{if(S.won||S.dead){queue=[];ended();}else if(queue.length)doAct(queue.shift(),true);});
+  play(frames,()=>{if(S.won||S.dead){queue=[];ended();}
+    else if(demo&&queue.length){const g=gen;setTimeout(()=>{if(g===gen&&demo&&!playing&&queue.length)doAct(queue.shift(),true);},250);} // pause between replayed presses
+    else if(queue.length)doAct(queue.shift(),true);});
 }
 // Shortest safe sequence of drive/turn presses that leaves the tank on (gx,gy). Simulates ice, belts, tunnels and gun lines.
 function route(gx,gy){
