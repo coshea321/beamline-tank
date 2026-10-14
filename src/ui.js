@@ -1,6 +1,6 @@
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,wide=matchMedia('(orientation: landscape) and (max-height: 540px)');
 let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],grp=0,demo=false,bad=null,view=null,beam=null,cell=32,C={};
 const solved=new Set();
 const NAMES=['bg','ink','floor','grid','wall','wallhi','brick','brickln','crate','crateln','water','waterhi','ice','icehi','belt','beltln','glass','mirror','mirrorback','tank','tankdk','enemy','enemydk','deadat','laser','flag','accent'];
@@ -10,7 +10,8 @@ function load(){try{const o=JSON.parse(localStorage.getItem('blt')||'null');if(o
   try{const d=JSON.parse(localStorage.getItem('blt2')||'{}');(d.s||[]).forEach(n=>solved.add(n));const k=LEVELS.findIndex(L=>L.name===d.n);if(k>=0)li=k;else if(d.li>=0&&d.li<LEVELS.length)li=d.li;}catch(e){}}
 
 function size(){
-  const W=$('board').clientWidth-16,H=Math.max(220,innerHeight-360);
+  // Sideways phone: the board has the full height (less the page and board padding) and its share of the width.
+  const W=$('board').clientWidth-16,H=wide.matches?innerHeight-32:Math.max(220,innerHeight-360);
   cell=Math.max(14,Math.min(Math.floor(W/S.w),Math.floor(H/S.h),52));
   const dpr=window.devicePixelRatio||1;
   cv.style.width=cell*S.w+'px';cv.style.height=cell*S.h+'px';

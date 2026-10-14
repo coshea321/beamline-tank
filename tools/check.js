@@ -1,5 +1,5 @@
 // Smoke test of the built PWA: serves docs/, loads it in headless Chromium, checks for script errors,
-// service-worker registration, an offline reload, tap-to-drive, tap-to-shoot, the collapsible sector strip and its groups, and switching level mid-animation. Needs: npm i -D playwright (or a Chromium on PATH).
+// service-worker registration, an offline reload, tap-to-drive, tap-to-shoot, the sideways-phone layout, the collapsible sector strip and its groups, and switching level mid-animation. Needs: npm i -D playwright (or a Chromium on PATH).
 const http=require('http'),fs=require('fs'),path=require('path');
 const {chromium}=require('playwright');
 const root=path.join(__dirname,'..','docs');
@@ -43,6 +43,11 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
   // Show solution: plays the shortest route from the start and ends on the "Shortest route shown" banner without marking the sector solved.
   await p.click('#show');
   const shown=await p.waitForFunction(()=>/shortest route shown/i.test(document.body.innerText),null,{timeout:60000}).then(()=>true,()=>false);
-  console.log({errors:errs,showSolution:shown,sectorsCollapse:shut&&reshut,serviceWorker:sw,offlineTitle:offline,afterTap:moves,tapToShoot:shot,sectorGroups:groups,staleFramesAfterSwitch:stale});
-  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||!shown||stale?1:0);
+  // Phone turned sideways: only the board and controls show, all inside the screen without scrolling.
+  await p.setViewportSize({width:844,height:390});await p.waitForTimeout(300);
+  const land=await p.evaluate(()=>{const v=id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight;};
+    const hid=['lname','tip','sectors'].every(id=>!document.getElementById(id).offsetParent)&&!document.querySelector('header').offsetParent;
+    return hid&&['cv','k0','k2','fire','undo','show'].every(v)&&document.documentElement.scrollHeight<=innerHeight&&document.getElementById('cv').getBoundingClientRect().height>250;});
+  console.log({errors:errs,landscape:land,showSolution:shown,sectorsCollapse:shut&&reshut,serviceWorker:sw,offlineTitle:offline,afterTap:moves,tapToShoot:shot,sectorGroups:groups,staleFramesAfterSwitch:stale});
+  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||!shown||!land||stale?1:0);
 })();

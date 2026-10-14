@@ -61,6 +61,17 @@ summary{cursor:pointer;font-weight:600;letter-spacing:.06em;text-transform:upper
 dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:10px 0 0}
 dt{font-weight:600} dd{margin:0;color:var(--muted);min-width:0}
 kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
+/* Phone turned sideways: only the board and the controls, like a gamepad (drive pad left, board centre, fire and buttons right). */
+@media (orientation:landscape) and (max-height:540px){
+  .wrap{max-width:none;height:100vh;height:100dvh;box-sizing:border-box;flex-direction:row;align-items:center;gap:12px;
+    padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left))}
+  header,.sectors,.meta,#tip,.wrap>details{display:none}
+  .deck{display:contents}
+  .pad{order:0;flex:none}
+  .board{order:1;flex:1 1 0;align-self:stretch;align-items:center}
+  .side{order:2;flex:none;width:150px;min-width:0}
+  #fire{padding:22px 10px}
+}
 </style>
 <main class="wrap">
   <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v__APPVERSION__</span></p></header>
