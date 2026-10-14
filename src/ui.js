@@ -146,7 +146,7 @@ function play(frames,done){
   })();
 }
 function doAct(a,auto){
-  if(!auto){queue=[];grp++;}
+  if(!auto){queue=[];grp++;demo=false;} // taking over from a demo makes the run count again
   if(playing){if(!auto)queue=[a];return;}
   if(S.dead||S.won){queue=[];return;}
   const before=clone(S),kind=actKind(S,a),frames=[];
@@ -195,7 +195,7 @@ function tapBoard(e){
   if(x===S.tx&&y===S.ty){doAct(4);return;}
   const p=route(x,y)||aim(x,y);
   if(!p){bad={x,y};draw();setTimeout(()=>{bad=null;draw();},450);return;}
-  grp++;
+  grp++;demo=false;
   if(playing){queue=p;return;}
   queue=p.slice(1);doAct(p[0],true);
 }

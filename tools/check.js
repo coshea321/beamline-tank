@@ -44,5 +44,5 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
   await p.click('#show');
   const shown=await p.waitForFunction(()=>/shortest route shown/i.test(document.body.innerText),null,{timeout:60000}).then(()=>true,()=>false);
   console.log({errors:errs,showSolution:shown,sectorsCollapse:shut&&reshut,serviceWorker:sw,offlineTitle:offline,afterTap:moves,tapToShoot:shot,sectorGroups:groups,staleFramesAfterSwitch:stale});
-  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||stale?1:0);
+  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||!shown||stale?1:0);
 })();
