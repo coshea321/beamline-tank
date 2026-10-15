@@ -1,7 +1,7 @@
 (function(){
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,wide=matchMedia('(orientation: landscape) and (max-height: 540px)');
-let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],grp=0,demo=false,bad=null,view=null,beam=null,cell=32,C={};
+let li=0,S,hist=[],moves=0,shots=0,playing=false,gen=0,queue=[],grp=0,demo=false,asking=false,bad=null,view=null,beam=null,cell=32,C={};
 const solved=new Set();
 const NAMES=['bg','ink','floor','grid','wall','wallhi','brick','brickln','crate','crateln','water','waterhi','ice','icehi','belt','beltln','glass','mirror','mirrorback','tank','tankdk','enemy','enemydk','deadat','laser','flag','accent'];
 function colors(){const cs=getComputedStyle(document.documentElement);NAMES.forEach(n=>C[n]=cs.getPropertyValue('--'+n).trim());}
@@ -113,7 +113,7 @@ function hud(){
   $('sprog').textContent='· on '+String(li+1).padStart(2,'0')+' · '+LEVELS.filter(L=>solved.has(L.name)).length+' of '+LEVELS.length+' cleared';
 }
 function banner(kind,title,text,btns){
-  const b=$('banner');if(!kind){b.hidden=true;return;}
+  const b=$('banner');asking=false;if(!kind){b.hidden=true;return;}
   b.className=kind;$('btitle').textContent=title;$('btext').textContent=text;
   const row=$('bbtns');row.textContent='';
   btns.forEach(([label,fn,pri])=>{const e=document.createElement('button');e.className='btn'+(pri?' pri':'');e.textContent=label;e.onclick=fn;row.appendChild(e);});
@@ -123,8 +123,10 @@ function go(n){gen++;playing=false;demo=false;li=(n+LEVELS.length)%LEVELS.length
 function undo(){if(playing||!hist.length)return;const g=hist[hist.length-1].g;let h;do h=hist.pop();while(hist.length&&hist[hist.length-1].g===g); // one tap-to-drive route undoes in one go
   S=h.s;moves=h.m;shots=h.f;banner();hud();draw();}
 function showSolution(){ // asks first, since the button is easy to hit by accident; Cancel leaves the run untouched
+  queue=[]; // stop a tapped route, so nothing moves behind the question
   banner('ask','Show the solution?','This restarts the sector and plays the shortest route. It won\'t count as solved.',
     [['Show it',playSolution,true],['Cancel',()=>{banner();if(S.won||S.dead)ended();}]]);
+  asking=true;
 }
 function playSolution(){ // replays the shortest route from the start; never marks the sector solved
   go(li);demo=true;const p=[...BEST[li][2]].map(c=>'URDLF'.indexOf(c));queue=p.slice(1);doAct(p[0],true);
@@ -153,6 +155,7 @@ function play(frames,done){
   })();
 }
 function doAct(a,auto){
+  if(asking&&!auto)return; // drive and fire wait while the solution question is open
   if(!auto){queue=[];grp++;demo=false;} // taking over from a demo makes the run count again
   if(playing){if(!auto)queue=[a];return;}
   if(S.dead||S.won){queue=[];return;}
@@ -198,7 +201,7 @@ function aim(gx,gy){
   return null;
 }
 function tapBoard(e){
-  if(!S||S.dead||S.won)return;
+  if(!S||S.dead||S.won||asking)return;
   const r=cv.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)/cell),y=Math.floor((e.clientY-r.top)/cell);
   if(x<0||y<0||x>=S.w||y>=S.h)return;
   if(x===S.tx&&y===S.ty){doAct(4);return;}
