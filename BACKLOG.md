@@ -27,3 +27,4 @@ here in the same PR; record any decision Cathal makes, including "no".
   square: worst case about 6 ms and under 300 positions searched. Revisit only if much larger levels arrive.
 - **Version number** (Cathal, 9 Oct 2026): a small version number in the header, from `package.json`. Bumped by hand in PRs players will notice.
 - **Bulk levels** (Cathal, 10 Oct 2026): new extra-hard levels come from `tools/batch.js` (generated from scratch, near-copies rejected), about 10 per PR, so a cheaper model can run it. The sector strip groups sectors 20 at a time.
+- **Show solution asks first** (Cathal, 15 Oct 2026): too easy to tap by accident, so it asks "Show the solution?" with Show it / Cancel. The replay runs slower so it can be followed.
