@@ -69,6 +69,7 @@ const LEVELS=[{"name":"First Shot","tip":"Bricks crumble under laser fire. Press
 {"name":"Flint Causeway","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["#########","#.Bb.#F^#","##...#..#","##bbG.3~#","#bB5..#1#","#..b4..~#","#G.#~##~#","#T3..bB3#","#...G..b#","#########"]},
 {"name":"Ash Ridge","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["##########","##.#..#..#","#..3....<#","#.v#B~~~~#","#.~...BbT#","#..~..#v~#","##b.Bb1b~#","#bb^.v6F<#","##########"]},
 {"name":"Burnt Weir","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["#############","#..<Gb.b#.T##","#..B^bvib~bX#","#.~~#~2.G.###","#3vb#..BX~.~#","#..b.b#..4.F#","#############"]},
+{"name":"Salt Gate","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","#...T.#.bbb#","#...bv~b~4<#","###G..v..7.#","#...##.#.3F#","#^~.bbb>8bb#","#..b..#.>B4#","#.b>....b>~#","############"]},
 {"name":"Deep Sound","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["#############","#.>.........#","#...~.#..#<.#","#.~...#.b...#","#.~.~<#..<b.#","#.~..~^~.#b.#","#4.B.bbb5.~##","#.~.~##..TBF#","#.#...b...~##","#############"]},
 {"name":"Hollow Trench","tip":"Extra-hard sector. Plan every shot before you fire.","rows":["############","#<......#bX#","#..>b#~.BB.#","#.GG.~.G.b~#","#T#...~...##","#.~.#X~.bB.#","#..~~###...#","#.##..bF#..#","############"]}];
 const ORIG_NAMES=["First Shot","Pontoon","Round the Corner","Line of Sight","Return Fire","Turntable","Black Ice","One-Way Belt","Wormholes","Thin Ice"];
