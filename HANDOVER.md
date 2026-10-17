@@ -3,7 +3,7 @@
 A LaserTank-style puzzle game (turn-based tank, lasers, mirrors, crates, anti-tanks). It runs as a single-file web page and as an installable PWA for phones. It uses no frameworks or dependencies, and every level is checked by a solver.
 
 - **Live game (GitHub Pages):** https://coshea321.github.io/ubiquitous-memory/ (served from `docs/` on `main`, so every merge goes live)
-- **Status:** version 1.13, 71 levels, ordered easy to hard. Sectors 29–71 are an extra-hard tier (par 80–212, sorted by par). Tap-to-drive, tap-to-shoot, undo, restart, progress saved on the device, light and dark themes.
+- **Status:** version 1.14, 76 levels, ordered easy to hard. Sectors 29–76 are an extra-hard tier (par 80–259, sorted by par). Tap-to-drive, tap-to-shoot, undo, restart, progress saved on the device, light and dark themes.
 - **Name:** "Beamline Tank" is deliberately not "LaserTank". The artwork and levels are original; only the rules are borrowed.
 
 ## Quick start
@@ -133,6 +133,7 @@ About 8 levels an hour on 4 CPUs. Progress is written to `src/levels.js` after e
 Keep each PR to about 10 levels so it stays reviewable.
 To go past the current hardest par, pass a higher `minPar` (v1.12 used `node tools/batch.js 5 11 175 500`). Few random layouts get there: that run kept 2 in 3 rounds (about 4.5 hours).
 Faster: take the near-misses it rejected (their pruned `p*.json` files in the batch work folder), run `climb.js` on each for another 600 steps, prune again and check the distance; that turned 170, 155, 151 and 144 into 212, 188, 178 and 186 in about 1.5 hours.
+For v1.14 (par 190+) the same route did most of the work: two batch rounds (`batch.js 5 13 190 500`) gave one level (235); climbing near-misses, sometimes twice, gave the other four (259, 211, 192, 190). A climb stalls when the level's search nears the solver's 500k-state cap in `climb.js`.
 
 ## Put it on your phone (PWA)
 
