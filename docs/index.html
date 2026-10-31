@@ -365,7 +365,8 @@ function backupUI(){
   const msg=t=>{$('bmsg').textContent=t;};
   $('backup').addEventListener('toggle',()=>msg(''));
   $('bcopy').onclick=()=>{const t=$('bcode');t.value=backupCode();
-    const fallback=()=>{t.select();try{document.execCommand('copy');msg('Copied.');}catch(e){msg('Select the code and copy it.');}};
+    const fallback=()=>{t.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){} // returns false without throwing when it can't copy
+      msg(ok?'Copied.':'Couldn\'t copy automatically. Press and hold the code, then copy it.');};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(()=>msg('Copied.'),fallback);else fallback();};
   $('rgo').onclick=()=>{const v=$('rcode').value.trim();if(!v){msg('Paste a backup code first.');return;}
     const n=restore(v);if(n<0){msg('That code isn\'t a Beamline Tank backup. Check it was copied in full.');return;}
