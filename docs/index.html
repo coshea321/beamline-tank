@@ -76,6 +76,12 @@ summary{cursor:pointer;font-weight:600;letter-spacing:.06em;text-transform:upper
 dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:10px 0 0}
 dt{font-weight:600} dd{margin:0;color:var(--muted);min-width:0}
 kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
+/* Back up progress: a copyable code of the cleared sectors, and a box to paste one back in. */
+.backup p{margin:10px 0 0;color:var(--muted);max-width:62ch}
+.backup label{display:block;margin-top:14px;font-weight:600}
+.backup textarea{display:block;box-sizing:border-box;width:100%;margin-top:6px;font:12px var(--mono);background:var(--panel);color:var(--ink);border:1.5px solid var(--line);border-radius:2px;padding:6px;resize:vertical;word-break:break-all}
+.backup .row{justify-content:flex-start;margin-top:8px}
+#bmsg{color:var(--ink);min-height:1.5em}
 /* Phone turned sideways: only the board, the controls and a small level name, like a gamepad
    (drive pad left, board centre, level name, Fire and buttons right). Safe-area insets move from :root onto .wrap so it is exactly one screen tall. */
 @media (orientation:landscape) and (max-height:540px){
@@ -96,7 +102,7 @@ kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
 </head>
 <body>
 <main class="wrap">
-  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.14</span></p></header>
+  <header><h1>Beamline Tank</h1><p class="sub">A LaserTank-style puzzle &middot; <span id="nsec"></span> sectors <span class="ver" title="Version">&middot; v1.15</span></p></header>
   <details class="sectors" id="sectors">
     <summary>Sectors <span class="n" id="sprog"></span></summary>
     <div class="groups" id="groups" role="tablist" aria-label="Sector groups" hidden></div>
@@ -133,6 +139,16 @@ kbd{font:inherit;border:1px solid var(--line);border-radius:2px;padding:0 4px}
       <dt>Belt</dt><dd>Carries the tank in the arrow direction.</dd>
       <dt>Tunnel</dt><dd>Teleports to the matching tunnel if its exit is clear.</dd>
     </dl>
+  </details>
+  <details class="backup" id="backup">
+    <summary>Back up progress</summary>
+    <p>Your cleared sectors live on this device only. Copy this code and keep it somewhere safe, such as a note or a message to yourself. Paste it into any copy of the game to bring them back.</p>
+    <textarea id="bcode" rows="3" readonly aria-label="Backup code"></textarea>
+    <div class="row"><button class="btn" id="bcopy">Copy code</button></div>
+    <label for="rcode">Restore from a code</label>
+    <textarea id="rcode" rows="3" placeholder="Paste a backup code here"></textarea>
+    <div class="row"><button class="btn" id="rgo">Restore</button></div>
+    <p id="bmsg" role="status"></p>
   </details>
 </main>
 <script>
@@ -337,6 +353,26 @@ function colors(){const cs=getComputedStyle(document.documentElement);NAMES.forE
 function save(){try{localStorage.setItem('blt2',JSON.stringify({s:[...solved],li,n:LEVELS[li].name}));}catch(e){}}
 function load(){try{const o=JSON.parse(localStorage.getItem('blt')||'null');if(o&&o.s)o.s.forEach(k=>ORIG_NAMES[k]&&solved.add(ORIG_NAMES[k]));}catch(e){}
   try{const d=JSON.parse(localStorage.getItem('blt2')||'{}');(d.s||[]).forEach(n=>solved.add(n));const k=LEVELS.findIndex(L=>L.name===d.n);if(k>=0)li=k;else if(d.li>=0&&d.li<LEVELS.length)li=d.li;}catch(e){}}
+// Backup code: "BLT1-" then base64 of the cleared level names, so it survives reordering like the saved progress does.
+function backupCode(){return 'BLT1-'+btoa(unescape(encodeURIComponent(JSON.stringify([...solved]))));}
+function restore(code){ // adds the code's cleared sectors to this device's; never removes any. Returns how many were new, or -1 if the code is bad.
+  let names;try{names=JSON.parse(decodeURIComponent(escape(atob(code.replace(/\s+/g,'').replace(/^BLT1-/,'')))));}catch(e){return -1;}
+  if(!Array.isArray(names)||!names.every(n=>typeof n==='string'))return -1;
+  let added=0;names.forEach(n=>{if(!solved.has(n)){solved.add(n);if(LEVELS.some(L=>L.name===n))added++;}});
+  save();hud();return added;
+}
+function backupUI(){
+  const msg=t=>{$('bmsg').textContent=t;};
+  $('backup').addEventListener('toggle',()=>msg(''));
+  $('bcopy').onclick=()=>{const t=$('bcode');t.value=backupCode();
+    const fallback=()=>{t.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){} // returns false without throwing when it can't copy
+      msg(ok?'Copied.':'Couldn\'t copy automatically. Press and hold the code, then copy it.');};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(()=>msg('Copied.'),fallback);else fallback();};
+  $('rgo').onclick=()=>{const v=$('rcode').value.trim();if(!v){msg('Paste a backup code first.');return;}
+    const n=restore(v);if(n<0){msg('That code isn\'t a Beamline Tank backup. Check it was copied in full.');return;}
+    $('rcode').value='';
+    msg((n?'Restored '+n+' cleared sector'+(n===1?'':'s')+'.':'Nothing new in that code: those sectors were already cleared here.')+' '+LEVELS.filter(L=>solved.has(L.name)).length+' of '+LEVELS.length+' cleared.');};
+}
 
 function size(){
   // Sideways phone: the board fills its grid cell, so its own height (less padding and border) is the limit.
@@ -439,6 +475,7 @@ function hud(){
   $('tip').textContent=LEVELS[li].tip;
   [...$('strip').children].forEach((b,k)=>{b.className=solved.has(LEVELS[k].name)?'done':'';b.setAttribute('aria-current',k===li);});
   [...$('groups').children].forEach((b,g)=>{const n=LEVELS.slice(g*GROUP,(g+1)*GROUP).filter(L=>solved.has(L.name)).length;b.lastChild.textContent=n?' '+n+'✓':'';});
+  $('bcode').value=backupCode(); // kept current, so the code is ready the moment the panel opens
   $('sprog').textContent='· on '+String(li+1).padStart(2,'0')+' · '+LEVELS.filter(L=>solved.has(L.name)).length+' of '+LEVELS.length+' cleared';
 }
 function banner(kind,title,text,btns){
@@ -561,12 +598,14 @@ function start(data){
   const KEYS={ArrowUp:0,ArrowRight:1,ArrowDown:2,ArrowLeft:3,w:0,d:1,s:2,a:3,' ':4};
   addEventListener('keydown',e=>{
     if(e.ctrlKey||e.metaKey||e.altKey)return;
+    if(e.target.closest&&e.target.closest('textarea,input'))return; // typing in the backup boxes isn't driving
     const k=e.key.length===1?e.key.toLowerCase():e.key;
     if(k in KEYS){e.preventDefault();doAct(KEYS[k]);}
     else if(k==='u'||k==='z'||k==='Backspace'){e.preventDefault();undo();}
     else if(k==='r'){if(!playing)go(li);}
   });
   addEventListener('resize',size);
+  backupUI();
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{colors();draw();});
   new MutationObserver(()=>{colors();draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   colors();$('nsec').textContent=LEVELS.length;go(li);

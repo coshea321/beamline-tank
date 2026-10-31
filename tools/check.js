@@ -1,5 +1,5 @@
 // Smoke test of the built PWA: serves docs/, loads it in headless Chromium, checks for script errors,
-// service-worker registration, an offline reload, tap-to-drive, tap-to-shoot, the sideways-phone layout, the collapsible sector strip and its groups, and switching level mid-animation. Needs: npm i -D playwright (or a Chromium on PATH).
+// service-worker registration, an offline reload, tap-to-drive, tap-to-shoot, the sideways-phone layout, the collapsible sector strip and its groups, backup and restore of progress, and switching level mid-animation. Needs: npm i -D playwright (or a Chromium on PATH).
 const http=require('http'),fs=require('fs'),path=require('path');
 const {chromium}=require('playwright');
 const root=path.join(__dirname,'..','docs');
@@ -45,11 +45,20 @@ const srv=http.createServer((q,r)=>{let f=path.join(root,decodeURIComponent(q.ur
   const asked=await p.locator('#bbtns button',{hasText:'Show it'}).isVisible();
   await p.click('#bbtns button:has-text("Show it")');
   const shown=asked&&await p.waitForFunction(()=>/shortest route shown/i.test(document.body.innerText),null,{timeout:180000}).then(()=>true,()=>false);
+  // Back up progress: the code from one device restores the cleared sectors on a fresh one; typing in the box doesn't drive; a bad code is refused.
+  await p.evaluate(()=>localStorage.setItem('blt2',JSON.stringify({s:[LEVELS[0].name,LEVELS[1].name]})));await p.reload();
+  await p.click('#backup summary');const code=await p.inputValue('#bcode');
+  await p.evaluate(()=>localStorage.removeItem('blt2'));await p.reload();await p.click('#backup summary');
+  const c0=await p.locator('#count').textContent();await p.type('#rcode','wd u');const typed=(await p.locator('#count').textContent())===c0;
+  await p.fill('#rcode','nonsense');await p.click('#rgo');const refused=/isn't a Beamline Tank backup/.test(await p.locator('#bmsg').textContent());
+  await p.fill('#rcode',code);await p.click('#rgo');
+  const backup=typed&&refused&&/^BLT1-/.test(code)&&/Restored 2 /.test(await p.locator('#bmsg').textContent())&&/ 2 of /.test(await p.locator('#sprog').textContent());
+  await p.click('#backup summary');
   // Phone turned sideways: only the board, controls and level name show, all inside the screen without scrolling.
   await p.setViewportSize({width:844,height:390});await p.waitForTimeout(300);
   const land=await p.evaluate(()=>{const v=id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight;};
     const hid=!!document.getElementById('lname').offsetParent&&['count','tip','sectors'].every(id=>!document.getElementById(id).offsetParent)&&!document.querySelector('header').offsetParent;
     return hid&&['cv','k0','k2','fire','undo','show'].every(v)&&document.documentElement.scrollHeight<=innerHeight&&document.getElementById('cv').getBoundingClientRect().height>250;});
-  console.log({errors:errs,landscape:land,showSolution:shown,sectorsCollapse:shut&&reshut,serviceWorker:sw,offlineTitle:offline,afterTap:moves,tapToShoot:shot,sectorGroups:groups,staleFramesAfterSwitch:stale});
-  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||!shown||!land||stale?1:0);
+  console.log({errors:errs,backup,landscape:land,showSolution:shown,sectorsCollapse:shut&&reshut,serviceWorker:sw,offlineTitle:offline,afterTap:moves,tapToShoot:shot,sectorGroups:groups,staleFramesAfterSwitch:stale});
+  await b.close();srv.close();process.exit(errs.length||!shut||!reshut||!sw||!/Moves [1-9]/.test(moves)||!shot||!groups||!shown||!backup||!land||stale?1:0);
 })();

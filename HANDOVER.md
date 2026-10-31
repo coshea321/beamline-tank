@@ -38,7 +38,7 @@ The service worker cache is separate: the build still stamps it from a hash of t
 | `tools/gen.js`, `prune.js`, `pick.js` | Random level generator → declutter → rank. Produced sectors 21–28. |
 | `tools/climb.js` | Hill-climber: mutates a level cell by cell, keeping changes that stay solvable and raise par. Produced the extra-hard tier: remixes of earlier levels, plus five levels climbed from fresh `gen.js` layouts (Tidewater, Narrows, Chicane, Sentry Post, Cold Front), then `prune.js`. |
 | `tools/batch.js` | One command for a batch of new extra-hard levels from scratch: gen → climb → prune → reject near-copies → name → insert by par. See below. |
-| `tools/check.js` | Playwright smoke test (script errors, service worker, offline reload, tap-to-drive, tap-to-shoot, collapsible sector strip and its groups, level switch mid-animation). |
+| `tools/check.js` | Playwright smoke test (script errors, service worker, offline reload, tap-to-drive, tap-to-shoot, collapsible sector strip and its groups, backup and restore, level switch mid-animation). |
 | `docs/` | **Build output.** The deployable PWA. Do not edit by hand. |
 | `build/artifact.html` | **Build output.** Paste or publish as the claude.ai artifact. |
 | `BACKLOG.md` | Pending ideas and decisions on record. |
@@ -92,6 +92,7 @@ A mirror's open sides are the two faces its bright diagonal looks out of. A beam
 - **Tap-to-shoot:** if the tapped square can't be reached but holds an object, `aim()` tries a shot in each direction (the current facing first, then clockwise) on cloned states. It picks the first shot whose beam reaches that square, changes something, and doesn't destroy the tank. Mirror bounces count. That becomes turn + fire, or just fire. If neither driving nor shooting works, it shows a red cross.
 - **Input queue:** tapped routes go into `queue`. Pressing a key or button replaces the queue, which interrupts an auto-drive.
 - **Saved progress:** stored in `localStorage` key `blt2` as solved level *names*, plus the current level by name (`n`, with its index `li` as a fallback), so levels can be reordered freely.
+- **Back up progress:** a `<details>` under the field manual. The code is `BLT1-` + base64 of the JSON list of solved level names (`backupCode()`). Restoring (`restore()`) only *adds* sectors, never removes any, and refuses anything that doesn't decode to a list of names. Key presses typed into its text boxes don't drive the tank. Installs don't share storage on iPhone (each Home Screen app has its own), so this is the way to move progress between them.
 - **Sideways phone:** a media query in `shell.html` (`landscape` and height ≤ 540px) hides the header, sector strip, move count, tip and field manual, and lays out a grid: drive pad | board | small level name above Fire and buttons. The safe-area padding moves from `:root` onto `.wrap` so the page is exactly one screen tall. `size()` in `ui.js` uses the same query to give the board the full screen height. The manifest's `orientation` is `any` so the installed app can rotate.
 - **Glass vs ice:** glass is drawn as a framed window (dark frame and cross bars) and ice as flat, unframed floor with streaks, so the two can't be confused on a level that has only one of them.
 - **Artifact leftovers:** `window.claude.hot` calls are for the artifact host and are no-ops in the PWA.
