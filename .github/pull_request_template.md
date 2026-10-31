@@ -1,6 +1,6 @@
 👉 **Try this version:** TEST-ARTIFACT-LINK
 
-🎮 **Live game:** https://coshea321.github.io/ubiquitous-memory/
+🎮 **Live game:** https://coshea321.github.io/beamline-tank/
 
 <!-- The test link is this branch's build/artifact.html published as a separate
      claude.ai artifact, so the live game stays untouched until merge. Its saved

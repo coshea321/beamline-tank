@@ -1,7 +1,7 @@
 # Beamline Tank
 
 LaserTank-style puzzle game. Plain JS, no dependencies. Played on GitHub Pages
-(**live game: https://coshea321.github.io/ubiquitous-memory/**), an installable PWA served from `docs/` on `main`. The old claude.ai artifact is retired: don't update it.
+(**live game: https://coshea321.github.io/beamline-tank/**), an installable PWA served from `docs/` on `main`. The old claude.ai artifact is retired: don't update it.
 Cathal is a **non-coder**: he reviews and merges every PR. Lead with the answer, be concise, flag honest trade-offs.
 
 ## Docs

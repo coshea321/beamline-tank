@@ -2,7 +2,7 @@
 
 A LaserTank-style puzzle game (turn-based tank, lasers, mirrors, crates, anti-tanks). It runs as a single-file web page and as an installable PWA for phones. It uses no frameworks or dependencies, and every level is checked by a solver.
 
-- **Live game (GitHub Pages):** https://coshea321.github.io/ubiquitous-memory/ (served from `docs/` on `main`, so every merge goes live)
+- **Live game (GitHub Pages):** https://coshea321.github.io/beamline-tank/ (served from `docs/` on `main`, so every merge goes live)
 - **Status:** version 1.14, 76 levels, ordered easy to hard. Sectors 29–76 are an extra-hard tier (par 80–259, sorted by par). Tap-to-drive, tap-to-shoot, undo, restart, progress saved on the device, light and dark themes.
 - **Name:** "Beamline Tank" is deliberately not "LaserTank". The artwork and levels are original; only the rules are borrowed.
 
