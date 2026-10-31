@@ -8,6 +8,25 @@ function colors(){const cs=getComputedStyle(document.documentElement);NAMES.forE
 function save(){try{localStorage.setItem('blt2',JSON.stringify({s:[...solved],li,n:LEVELS[li].name}));}catch(e){}}
 function load(){try{const o=JSON.parse(localStorage.getItem('blt')||'null');if(o&&o.s)o.s.forEach(k=>ORIG_NAMES[k]&&solved.add(ORIG_NAMES[k]));}catch(e){}
   try{const d=JSON.parse(localStorage.getItem('blt2')||'{}');(d.s||[]).forEach(n=>solved.add(n));const k=LEVELS.findIndex(L=>L.name===d.n);if(k>=0)li=k;else if(d.li>=0&&d.li<LEVELS.length)li=d.li;}catch(e){}}
+// Backup code: "BLT1-" then base64 of the cleared level names, so it survives reordering like the saved progress does.
+function backupCode(){return 'BLT1-'+btoa(unescape(encodeURIComponent(JSON.stringify([...solved]))));}
+function restore(code){ // adds the code's cleared sectors to this device's; never removes any. Returns how many were new, or -1 if the code is bad.
+  let names;try{names=JSON.parse(decodeURIComponent(escape(atob(code.replace(/\s+/g,'').replace(/^BLT1-/,'')))));}catch(e){return -1;}
+  if(!Array.isArray(names)||!names.every(n=>typeof n==='string'))return -1;
+  let added=0;names.forEach(n=>{if(!solved.has(n)){solved.add(n);if(LEVELS.some(L=>L.name===n))added++;}});
+  save();hud();return added;
+}
+function backupUI(){
+  const msg=t=>{$('bmsg').textContent=t;};
+  $('backup').addEventListener('toggle',()=>msg(''));
+  $('bcopy').onclick=()=>{const t=$('bcode');t.value=backupCode();
+    const fallback=()=>{t.select();try{document.execCommand('copy');msg('Copied.');}catch(e){msg('Select the code and copy it.');}};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(()=>msg('Copied.'),fallback);else fallback();};
+  $('rgo').onclick=()=>{const v=$('rcode').value.trim();if(!v){msg('Paste a backup code first.');return;}
+    const n=restore(v);if(n<0){msg('That code isn\'t a Beamline Tank backup. Check it was copied in full.');return;}
+    $('rcode').value='';
+    msg((n?'Restored '+n+' cleared sector'+(n===1?'':'s')+'.':'Nothing new in that code: those sectors were already cleared here.')+' '+LEVELS.filter(L=>solved.has(L.name)).length+' of '+LEVELS.length+' cleared.');};
+}
 
 function size(){
   // Sideways phone: the board fills its grid cell, so its own height (less padding and border) is the limit.
@@ -110,6 +129,7 @@ function hud(){
   $('tip').textContent=LEVELS[li].tip;
   [...$('strip').children].forEach((b,k)=>{b.className=solved.has(LEVELS[k].name)?'done':'';b.setAttribute('aria-current',k===li);});
   [...$('groups').children].forEach((b,g)=>{const n=LEVELS.slice(g*GROUP,(g+1)*GROUP).filter(L=>solved.has(L.name)).length;b.lastChild.textContent=n?' '+n+'✓':'';});
+  $('bcode').value=backupCode(); // kept current, so the code is ready the moment the panel opens
   $('sprog').textContent='· on '+String(li+1).padStart(2,'0')+' · '+LEVELS.filter(L=>solved.has(L.name)).length+' of '+LEVELS.length+' cleared';
 }
 function banner(kind,title,text,btns){
@@ -232,12 +252,14 @@ function start(data){
   const KEYS={ArrowUp:0,ArrowRight:1,ArrowDown:2,ArrowLeft:3,w:0,d:1,s:2,a:3,' ':4};
   addEventListener('keydown',e=>{
     if(e.ctrlKey||e.metaKey||e.altKey)return;
+    if(e.target.closest&&e.target.closest('textarea,input'))return; // typing in the backup boxes isn't driving
     const k=e.key.length===1?e.key.toLowerCase():e.key;
     if(k in KEYS){e.preventDefault();doAct(KEYS[k]);}
     else if(k==='u'||k==='z'||k==='Backspace'){e.preventDefault();undo();}
     else if(k==='r'){if(!playing)go(li);}
   });
   addEventListener('resize',size);
+  backupUI();
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{colors();draw();});
   new MutationObserver(()=>{colors();draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   colors();$('nsec').textContent=LEVELS.length;go(li);

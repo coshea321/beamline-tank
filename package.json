@@ -1,7 +1,7 @@
 {
   "name": "beamline-tank",
   "private": true,
-  "version": "1.14",
+  "version": "1.15",
   "description": "A LaserTank-style puzzle game: single-file web page + installable PWA.",
   "scripts": {
     "build": "node tools/build.js",
